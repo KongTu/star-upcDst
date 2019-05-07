@@ -14,13 +14,13 @@ set (LIB_READER dstreader)
 set (BIN AnalysisTemplate)
 
 #UPC picoDsts library
-set (UPC_LIB /star/u/jaroslav/star-upcDst/build/libstar-upc.so)
-set (UPC_INC /star/u/jaroslav/star-upcDst/include)
+set (UPC_LIB /Users/kong/google_drive/BNL_folder/Work/STAR/star-upcDst/build/libstar-upc.dylib)
+set (UPC_INC /Users/kong/google_drive/BNL_folder/Work/STAR/star-upcDst/include)
 
 #general compiler options
 set (CMAKE_CXX_COMPILER /usr/bin/g++)
 #option -Wl,--no-as-needed is necessary only with root5
-set (CMAKE_CXX_FLAGS "-Wall -g -Wl,--no-as-needed")
+set (CMAKE_CXX_FLAGS "-Wall -g")
 include_directories (include ${UPC_INC})
 
 #ROOT section
