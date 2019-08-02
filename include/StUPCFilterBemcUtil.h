@@ -51,7 +51,7 @@ private:
     Float_t clsSigmaEta;
     Float_t clsSigmaPhi;
     Float_t clsE;
-    UInt_t clsAdc0;
+    Int_t clsAdc0;
     Bool_t isMatched;
     Float_t clsHT;
     Int_t clsHTsoftID;

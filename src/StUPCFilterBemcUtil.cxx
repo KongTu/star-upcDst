@@ -93,7 +93,7 @@ Bool_t StUPCFilterBemcUtil::processEvent(StMuDst *muDst, StUPCEvent *upcEvt) {
     const StPtrVecEmcRawHit &hits = cls->hit();
 
     Float_t htEn = -9999.; // high tower hit energy
-    UInt_t htAdc = -99;
+    Int_t htAdc = -99;
     Int_t htID = -9999; // high tower softID
 
     //hits loop
