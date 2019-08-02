@@ -93,6 +93,7 @@ Bool_t StUPCFilterBemcUtil::processEvent(StMuDst *muDst, StUPCEvent *upcEvt) {
     const StPtrVecEmcRawHit &hits = cls->hit();
 
     Float_t htEn = -9999.; // high tower hit energy
+    UInt_t htAdc = -99;
     Int_t htID = -9999; // high tower softID
 
     //hits loop
@@ -112,11 +113,15 @@ Bool_t StUPCFilterBemcUtil::processEvent(StMuDst *muDst, StUPCEvent *upcEvt) {
       mEmcHit.clsId = nCls; //cluster ID in hit as position of cluster in clusters vector
       //hit energy
       Float_t en = rawhit->energy();
+      UInt_t adc = rawhit->adc();
       mEmcHit.hitE = en;
       //high tower energy and softID
       if( en > htEn ) {
         htEn = en;
         htID = emcSoftId;
+      }
+      if( adc > htAdc ){
+        htAdc = adc;
       }
       mVecEmcHits->push_back( mEmcHit );
 
@@ -128,6 +133,7 @@ Bool_t StUPCFilterBemcUtil::processEvent(StMuDst *muDst, StUPCEvent *upcEvt) {
     mEmcCluster.clsSigmaEta = cls->sigmaEta();
     mEmcCluster.clsSigmaPhi = cls->sigmaPhi();
     mEmcCluster.clsE = cls->energy();
+    mEmcCluster.clsAdc0 = htAdc;
     mEmcCluster.clsHT = htEn;
     mEmcCluster.clsHTsoftID = htID;
     mEmcCluster.isMatched = kFALSE;
@@ -197,6 +203,7 @@ void StUPCFilterBemcUtil::writeBEMC(StUPCEvent *upcEvt) {
     upcCls->setSigmaEta( cluster->clsSigmaEta );
     upcCls->setSigmaPhi( cluster->clsSigmaPhi );
     upcCls->setEnergy( cluster->clsE );
+    upcCls->setAdc0( cluster->clsAdc0 );
     upcCls->setHTEnergy( cluster->clsHT );
     upcCls->setHTsoftID( cluster->clsHTsoftID );
     //cluster ID as position of cluster in clusters vector

@@ -296,7 +296,7 @@ Int_t StUPCFilterMaker::Make()
     for(Int_t itrk=0; itrk<trkArray->GetEntriesFast(); itrk++) {
       StMuTrack *track = dynamic_cast<StMuTrack*>( trkArray->At(itrk) );
       if( !track ) continue;
-
+      
       //matching to BEMC cluster
       UInt_t clsId=0;
       Double_t emcPhi=-999., emcEta=-999., emcPt=-999.;
