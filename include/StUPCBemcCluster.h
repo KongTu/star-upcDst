@@ -22,6 +22,7 @@ public:
   void setSigmaEta(Float_t se) { mSigmaEta = se; }
   void setSigmaPhi(Float_t sp) { mSigmaPhi = sp; }
   void setEnergy(Float_t en) { mEnergy = en; }
+  void setAdc0(UInt_t htAdc) { mAdc0 = htAdc; }
   void setId(UInt_t id) { mId = id; }
 
   void setHTEnergy(Float_t en) { mHTEnergy = en; }
@@ -33,6 +34,7 @@ public:
   Float_t getSigmaEta() const { return mSigmaEta; }
   Float_t getSigmaPhi() const { return mSigmaPhi; }
   Float_t getEnergy() const { return mEnergy; }
+  UInt_t  getAdc0() const { return mAdc0; }
   UInt_t getId() const { return mId; }
 
   Float_t getHTEnergy() const { return mHTEnergy; }
@@ -51,6 +53,7 @@ private:
   UInt_t mId; // original ID
 
   Float_t mHTEnergy; // energy of highest energy cell in cluster (high tower)
+  UInt_t mAdc0;
   Int_t mHTsoftID; // softID of highest energy cell
 
 
