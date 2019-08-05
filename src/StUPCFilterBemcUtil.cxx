@@ -113,7 +113,7 @@ Bool_t StUPCFilterBemcUtil::processEvent(StMuDst *muDst, StUPCEvent *upcEvt) {
       mEmcHit.clsId = nCls; //cluster ID in hit as position of cluster in clusters vector
       //hit energy
       Float_t en = rawhit->energy();
-      UInt_t adc = rawhit->adc();
+      Int_t adc = rawhit->adc();
       mEmcHit.hitE = en;
       //high tower energy and softID
       if( en > htEn ) {
