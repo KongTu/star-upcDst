@@ -10,7 +10,8 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
 
   //load libraries to work with muDst
   gROOT->Macro("loadMuDst.C");
-
+  gROOT->Macro("LoadLogger.C");
+  
   // Load St_db_Maker and co
   gSystem->Load("StDbLib.so");
   gSystem->Load("StDbBroker.so");
