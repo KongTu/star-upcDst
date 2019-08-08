@@ -25,6 +25,7 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
 
   //load the analysis maker compiled before with cons
   gSystem->Load("StUPCFilterMaker.so");
+  gSystem->Load(".sl73_gcc485/lib/libStTriggerUtilities.so");
 
   //create chain directory-like structure for maker
   //top level
