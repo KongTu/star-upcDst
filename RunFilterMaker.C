@@ -60,6 +60,13 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
   //analysis maker
   anaMaker = new StUPCFilterMaker(maker, outfile); //maker for muDst passed to the constructor
 
+  StTriggerSimuMaker* simuTrig = new StTriggerSimuMaker("StarTrigSimu");
+  simuTrig->useOfflineDB();
+  simuTrig->setMC(0);
+  simuTrig->useBemc();
+  simuTrig->useEemc();
+  simuTrig->bemc->setConfig(StBemcTriggerSimu::kOnline);
+
   //----------------------------------------------------------------------
   // analysis maker configuration, do not change default values here,
   // they are supposed to be loaded from configuration file
