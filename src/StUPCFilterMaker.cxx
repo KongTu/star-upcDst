@@ -43,6 +43,7 @@
 //get  EEMC
 #include "StTriggerUtilities/Eemc/StEemcTriggerSimu.h"
 #include "StTriggerUtilities/Eemc/EemcHttpInfo.h"
+#include "StTriggerUtilities/Eemc/EemcTrigUtil.h"
 #include "StTriggerUtilities/Eemc/EEfeeTPTree.h" // for printouts only
 #include "StTriggerUtilities/Eemc/EEfeeTP.h"  // for printouts only
 
