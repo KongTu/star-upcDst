@@ -193,7 +193,7 @@ Int_t StUPCFilterMaker::Make()
   //event passed the trigger
 
   //simulate trigger
-  StTriggerSimuMaker* simuTrig = new StTriggerSimuMaker("StarTrigSimu");
+  simuTrig = new StTriggerSimuMaker("StarTrigSimu");
   simuTrig->useOfflineDB();
   simuTrig->setMC(mIsMC);
   simuTrig->useBemc();

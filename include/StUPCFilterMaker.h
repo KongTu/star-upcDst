@@ -12,6 +12,7 @@ class StEmcGeom;
 class StMuTrack;
 class StUPCFilterTrgUtil;
 class StUPCFilterBemcUtil;
+class StTriggerSimuMaker;
 
 class StUPCFilterMaker: public StMaker {
 
@@ -62,6 +63,8 @@ private:
   StUPCFilterTrgUtil *mTrgUtil;
   StUPCFilterBemcUtil *mBemcUtil; //utility class for BEMC matching
 
+  //simuTrig
+  StTriggerSimuMaker* simuTrig;
 
   ClassDef(StUPCFilterMaker, 1);
 
