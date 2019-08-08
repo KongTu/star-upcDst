@@ -40,6 +40,11 @@
 #include "StTriggerUtilities/Bemc/StBemcTriggerSimu.h"
 // #include "StTriggerUtilities/Eemc/StEemcTriggerSimu.h"
 // #include "StTriggerUtilities/Emc/StEmcTriggerSimu.h"
+//get  EEMC
+#include "StTriggerUtilities/Eemc/StEemcTriggerSimu.h"
+#include "StTriggerUtilities/Eemc/EemcHttpInfo.h"
+#include "StTriggerUtilities/Eemc/EEfeeTPTree.h" // for printouts only
+#include "StTriggerUtilities/Eemc/EEfeeTP.h"  // for printouts only
 
 
 
@@ -205,7 +210,7 @@ Int_t StUPCFilterMaker::Make()
   mSimuTrig->useOfflineDB();
   mSimuTrig->setMC(mIsMC);
   mSimuTrig->useBemc();
-  mSimuTrig->useEemc(1);
+  mSimuTrig->useEemc();
   mSimuTrig->bemc->setConfig(StBemcTriggerSimu::kOnline);
 
   for(UInt_t i = 0; i<mSimuTrgIDs.size(); i++){
