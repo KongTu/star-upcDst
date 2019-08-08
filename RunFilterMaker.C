@@ -39,8 +39,6 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
   
   StMuDbReader* muDstDb = StMuDbReader::instance();
 
-  //St_db_Maker for Emc calibration
-  St_db_Maker *db1 = new St_db_Maker("db","$HOME/StarDb","MySQL:StarDb","$STAR/StarDb");
   // Maker to apply calibration
   StEmcADCtoEMaker *adc_to_e = new StEmcADCtoEMaker();
   adc_to_e->setPrint(kFALSE);
@@ -48,10 +46,12 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
 
   StEEmcDbMaker* eemcDb = new StEEmcDbMaker;
 
-
   //maker to access muDST data
   StMuDstMaker *maker = new StMuDstMaker(0, 0, "", filelist.c_str(), "", nFiles);
   
+  //St_db_Maker for Emc calibration
+  St_db_Maker *db1 = new St_db_Maker("db","$HOME/StarDb","MySQL:StarDb","$STAR/StarDb");
+
   // Makers for clusterfinding
   StPreEclMaker *pre_ecl = new StPreEclMaker();
   pre_ecl->setPrint(kFALSE);

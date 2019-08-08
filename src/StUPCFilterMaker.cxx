@@ -130,8 +130,6 @@ Int_t StUPCFilterMaker::Init() {
   if( mIsMC > 0 ) mUPCEvent->setIsMC( kTRUE );
 
   //simulate trigger
-  StEEmcDbMaker* eemcDb = new StEEmcDbMaker;
-
   mSimuTrig = new StTriggerSimuMaker("StarTrigSimu");
 
   //create the tree
