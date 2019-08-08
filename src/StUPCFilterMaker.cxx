@@ -57,7 +57,7 @@ ClassImp(StUPCFilterMaker);
 StUPCFilterMaker::StUPCFilterMaker(StMuDstMaker *maker, string outnam) : StMaker("StReadMuDstMaker"),
   mMaker(maker), mMuDst(0x0), mIsMC(0), mOutName(outnam), mOutFile(0x0),
   mHistList(0x0), mCounter(0x0), mErrCounter(0x0),
-  mUPCEvent(0x0), mUPCTree(0x0), mTrgUtil(0x0), mBemcUtil(0x0)
+  mUPCEvent(0x0), mUPCTree(0x0), mTrgUtil(0x0), simuTrig(0x0), mBemcUtil(0x0)
 {
   //constructor
 
@@ -73,6 +73,7 @@ StUPCFilterMaker::~StUPCFilterMaker()
   LOG_INFO << "StUPCFilterMaker::~StUPCFilterMaker() destructor called" << endm;
 
   delete mTrgUtil; mTrgUtil=0;
+  delete simuTrig; simuTrig=0;
   delete mBemcUtil; mBemcUtil=0;
   delete mHistList; mHistList=0;
   delete mCounter; mCounter=0;
