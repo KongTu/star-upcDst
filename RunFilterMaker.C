@@ -46,7 +46,7 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
   // Maker to apply calibration
   StEmcADCtoEMaker *adc_to_e = new StEmcADCtoEMaker();
   adc_to_e->setPrint(kFALSE);
-  adc_to_e->saveAllStEvent(true);
+  // adc_to_e->saveAllStEvent(true);
 
   StEEmcDbMaker* eemcDb = new StEEmcDbMaker;
   
