@@ -34,20 +34,9 @@
 #include "StEvent/StEventSummary.h"
 #include "StTriggerUtilities/StTriggerSimuMaker.h"
 #include "StTriggerUtilities/StTriggerSimuResult.h"
-// #include "StTriggerUtilities/StTriggerSimuPlayMaker.h"
-// #include "StTriggerUtilities/StTriggerThreshold.h"
-// #include "StTriggerUtilities/StVirtualTriggerSimu.h"
 #include "StTriggerUtilities/Bemc/StBemcTriggerSimu.h"
-// #include "StTriggerUtilities/Eemc/StEemcTriggerSimu.h"
-// #include "StTriggerUtilities/Emc/StEmcTriggerSimu.h"
-//get  EEMC
 #include "StTriggerUtilities/Eemc/StEemcTriggerSimu.h"
-#include "StTriggerUtilities/Eemc/EemcHttpInfo.h"
-#include "StTriggerUtilities/Eemc/EemcTrigUtil.h"
-#include "StTriggerUtilities/Eemc/EEfeeTPTree.h" // for printouts only
-#include "StTriggerUtilities/Eemc/EEfeeTP.h"  // for printouts only
-
-#include "StEEmcDbMaker/StEEmcDbMaker.h"
+#include "StTriggerUtilities/Emc/StEmcTriggerSimu.h"
 
 //local headers
 #include "StUPCEvent.h"
