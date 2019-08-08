@@ -46,6 +46,8 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
 
   StEEmcDbMaker* eemcDb = new StEEmcDbMaker();
 
+  StTriggerSimuMaker* mSimuTrig = new StTriggerSimuMaker("StarTrigSimu");
+
   //maker to access muDST data
   StMuDstMaker *maker = new StMuDstMaker(0, 0, "", filelist.c_str(), "", nFiles);
   
@@ -59,13 +61,6 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
   epc->setPrint(kFALSE);
   //analysis maker
   anaMaker = new StUPCFilterMaker(maker, outfile); //maker for muDst passed to the constructor
-
-  StTriggerSimuMaker* mSimuTrig = new StTriggerSimuMaker("StarTrigSimu");
-  // simuTrig->useOfflineDB();
-  // simuTrig->setMC(0);
-  // simuTrig->useBemc();
-  // simuTrig->useEemc();
-  // simuTrig->bemc->setConfig(StBemcTriggerSimu::kOnline);
 
   //----------------------------------------------------------------------
   // analysis maker configuration, do not change default values here,
