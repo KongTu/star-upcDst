@@ -36,9 +36,9 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
   //create chain directory-like structure for maker
   //top level
   StChain *chain = new StChain;
-  //maker to access muDST data
-  StMuDstMaker *maker = new StMuDstMaker(0, 0, "", filelist.c_str(), "", nFiles);
   
+  StEEmcDbMaker* eemcDb = new StEEmcDbMaker;
+
   StMuDbReader* muDstDb = StMuDbReader::instance();
 
   //St_db_Maker for Emc calibration
@@ -48,7 +48,8 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
   adc_to_e->setPrint(kFALSE);
   adc_to_e->saveAllStEvent(true);
 
-  StEEmcDbMaker* eemcDb = new StEEmcDbMaker;
+  //maker to access muDST data
+  StMuDstMaker *maker = new StMuDstMaker(0, 0, "", filelist.c_str(), "", nFiles);
   
   // Makers for clusterfinding
   StPreEclMaker *pre_ecl = new StPreEclMaker();
