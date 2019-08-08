@@ -55,6 +55,7 @@ private:
 
   //table of trigger IDs
   vector<UInt_t> mTrgIDs; // trigger IDs
+  vector<UInt_t> mSimuTrgIDs; // trigger IDs
   vector<Int_t> mTrgRanLo; // lower limit for run range for a given trigger ID
   vector<Int_t> mTrgRanHi; // upper limit for run range for a given trigger ID
 
