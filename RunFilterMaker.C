@@ -37,8 +37,6 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
   //top level
   StChain *chain = new StChain;
   
-  StEEmcDbMaker* eemcDb = new StEEmcDbMaker;
-
   StMuDbReader* muDstDb = StMuDbReader::instance();
 
   //St_db_Maker for Emc calibration
@@ -47,6 +45,9 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
   StEmcADCtoEMaker *adc_to_e = new StEmcADCtoEMaker();
   adc_to_e->setPrint(kFALSE);
   adc_to_e->saveAllStEvent(true);
+
+  StEEmcDbMaker* eemcDb = new StEEmcDbMaker;
+
 
   //maker to access muDST data
   StMuDstMaker *maker = new StMuDstMaker(0, 0, "", filelist.c_str(), "", nFiles);
