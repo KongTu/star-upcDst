@@ -153,6 +153,7 @@ private:
   StUPCEvent &operator=(const StUPCEvent &o); //not implemented
 
   TArrayI mTrgIDs; // fired trigger IDs
+  TArrayI mSimuTrgIDs; // fired trigger IDs
 
   Int_t mRunNum; // number of current run
   Int_t mEvtNum; // event number
