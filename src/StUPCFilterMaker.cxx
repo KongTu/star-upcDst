@@ -47,7 +47,7 @@
 #include "StTriggerUtilities/Eemc/EEfeeTPTree.h" // for printouts only
 #include "StTriggerUtilities/Eemc/EEfeeTP.h"  // for printouts only
 
-
+#include "StEEmcDbMaker/StEEmcDbMaker.h"
 
 //local headers
 #include "StUPCEvent.h"
@@ -130,6 +130,8 @@ Int_t StUPCFilterMaker::Init() {
   if( mIsMC > 0 ) mUPCEvent->setIsMC( kTRUE );
 
   //simulate trigger
+  StEEmcDbMaker* eemcDb = new StEEmcDbMaker;
+
   mSimuTrig = new StTriggerSimuMaker("StarTrigSimu");
 
   //create the tree
