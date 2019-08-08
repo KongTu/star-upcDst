@@ -64,7 +64,7 @@ private:
   StUPCFilterBemcUtil *mBemcUtil; //utility class for BEMC matching
 
   //simuTrig
-  StTriggerSimuMaker *simuTrig;
+  StTriggerSimuMaker *mSimuTrig;
 
   ClassDef(StUPCFilterMaker, 1);
 

@@ -57,7 +57,7 @@ ClassImp(StUPCFilterMaker);
 StUPCFilterMaker::StUPCFilterMaker(StMuDstMaker *maker, string outnam) : StMaker("StReadMuDstMaker"),
   mMaker(maker), mMuDst(0x0), mIsMC(0), mOutName(outnam), mOutFile(0x0),
   mHistList(0x0), mCounter(0x0), mErrCounter(0x0),
-  mUPCEvent(0x0), mUPCTree(0x0), mTrgUtil(0x0), simuTrig(0x0), mBemcUtil(0x0)
+  mUPCEvent(0x0), mUPCTree(0x0), mTrgUtil(0x0), mSimuTrig(0x0), mBemcUtil(0x0)
 {
   //constructor
 
@@ -73,7 +73,7 @@ StUPCFilterMaker::~StUPCFilterMaker()
   LOG_INFO << "StUPCFilterMaker::~StUPCFilterMaker() destructor called" << endm;
 
   delete mTrgUtil; mTrgUtil=0;
-  delete simuTrig; simuTrig=0;
+  delete mSimuTrig; mSimuTrig=0;
   delete mBemcUtil; mBemcUtil=0;
   delete mHistList; mHistList=0;
   delete mCounter; mCounter=0;
@@ -122,7 +122,7 @@ Int_t StUPCFilterMaker::Init() {
   if( mIsMC > 0 ) mUPCEvent->setIsMC( kTRUE );
 
   //simulate trigger
-  simuTrig = new StTriggerSimuMaker("StarTrigSimu");
+  mSimuTrig = new StTriggerSimuMaker("StarTrigSimu");
 
   //create the tree
   mUPCTree = new TTree("mUPCTree", "mUPCTree");
@@ -200,18 +200,18 @@ Int_t StUPCFilterMaker::Make()
   //event passed the trigger
 
   //simulate trigger
-  simuTrig->useOfflineDB();
-  simuTrig->setMC(mIsMC);
-  simuTrig->useBemc();
-  simuTrig->useEemc();
-  simuTrig->bemc->setConfig(StBemcTriggerSimu::kOnline);
+  mSimuTrig->useOfflineDB();
+  mSimuTrig->setMC(mIsMC);
+  mSimuTrig->useBemc();
+  mSimuTrig->useEemc();
+  mSimuTrig->bemc->setConfig(StBemcTriggerSimu::kOnline);
 
   for(UInt_t i = 0; i<mSimuTrgIDs.size(); i++){
     // run range for a given trigger ID
     if( mTrgRanLo[i] != 0 && runnum < mTrgRanLo[i] ) continue;
     if( mTrgRanHi[i] != 0 && runnum > mTrgRanHi[i] ) continue;
     //test simulated trigger ID at 'i'
-    if( !simuTrig->isTrigger( mSimuTrgIDs[i] ) ) continue;
+    if( !mSimuTrig->isTrigger( mSimuTrgIDs[i] ) ) continue;
 
     //simulated trigger ID was fired
     mUPCEvent->addSimuTriggerId( mSimuTrgIDs[i] );
