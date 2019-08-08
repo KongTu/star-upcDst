@@ -44,13 +44,13 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
   adc_to_e->setPrint(kFALSE);
   adc_to_e->saveAllStEvent(true);
 
-  StEEmcDbMaker* eemcDb = new StEEmcDbMaker("StEEmcDb");
+  StEEmcDbMaker* eemcDb = new StEEmcDbMaker();
 
   //maker to access muDST data
   StMuDstMaker *maker = new StMuDstMaker(0, 0, "", filelist.c_str(), "", nFiles);
   
   //St_db_Maker for Emc calibration
-  St_db_Maker *db1 = new St_db_Maker("St_db_Maker","$HOME/StarDb","MySQL:StarDb","$STAR/StarDb");
+  St_db_Maker *db1 = new St_db_Maker("db","$HOME/StarDb","MySQL:StarDb","$STAR/StarDb");
 
   // Makers for clusterfinding
   StPreEclMaker *pre_ecl = new StPreEclMaker();
