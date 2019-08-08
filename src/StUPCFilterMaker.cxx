@@ -32,6 +32,11 @@
 #include "StEvent/StTriggerData.h"
 #include "StEvent/StRunInfo.h"
 #include "StEvent/StEventSummary.h"
+#include "StTriggerUtilities/StTriggerSimuMaker.h"
+#include "StTriggerUtilities/StTriggerSimuResult.h"
+#include "StTriggerUtilities/Bemc/StBemcTriggerSimu.h"
+#include "StTriggerUtilities/Eemc/StEemcTriggerSimu.h"
+#include "StTriggerUtilities/Emc/StEmcTriggerSimu.h"
 
 //local headers
 #include "StUPCEvent.h"
@@ -81,6 +86,7 @@ void StUPCFilterMaker::addTriggerId(UInt_t id, Int_t rmin, Int_t rmax) {
   //add triggger ID to the table of IDs, set run range optionally
 
   mTrgIDs.push_back(id);
+  mSimuTrgIDs.push_back(id); //simulated trigger use the same ids
 
   mTrgRanLo.push_back(rmin);
   mTrgRanHi.push_back(rmax);
@@ -185,6 +191,27 @@ Int_t StUPCFilterMaker::Make()
   if( mIsMC > 0 ) isTrg = kTRUE; //override for MC
   if( !isTrg ) return kStOk;
   //event passed the trigger
+
+  //simulate trigger
+  StTriggerSimuMaker* simuTrig = new StTriggerSimuMaker("StarTrigSimu");
+  simuTrig->useOfflineDB();
+  simuTrig->setMC(mIsMC);
+  simuTrig->useBemc();
+  simuTrig->useEemc();
+  simuTrig->bemc->setConfig(StBemcTriggerSimu::kOnline);
+
+  for(UInt_t i = 0; i<mSimuTrgIDs.size(); i++){
+    // run range for a given trigger ID
+    if( mTrgRanLo[i] != 0 && runnum < mTrgRanLo[i] ) continue;
+    if( mTrgRanHi[i] != 0 && runnum > mTrgRanHi[i] ) continue;
+    //test simulated trigger ID at 'i'
+    if( !simuTrig->isTrigger( mSimuTrgIDs[i] ) ) continue;
+
+    //simulated trigger ID was fired
+    mUPCEvent->addSimuTriggerId( mSimuTrgIDs[i] );
+
+  }
+  //finish simulation of trigger
 
   mCounter->Fill( kTrg ); // events after trigger
 

@@ -27,6 +27,7 @@ public:
 
   //setters
   void addTriggerId(Int_t id);
+  void addSimuTriggerId(Int_t id);
   void setRunNumber(Int_t run) { mRunNum = run; }
   void setEventNumber(Int_t num) { mEvtNum = num; }
   void setFillNumber(Int_t num) { mFillNum = num; }
@@ -83,6 +84,7 @@ public:
 
   //getters
   Bool_t isTrigger(Int_t id) const;
+  Bool_t isSimuTrigger(Int_t id) const;
   Int_t getRunNumber() const { return mRunNum; }
   Int_t getEventNumber() const { return mEvtNum; }
   Int_t getFillNumber() const { return mFillNum; }

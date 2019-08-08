@@ -44,6 +44,7 @@ StUPCEvent::StUPCEvent():
   //default constructor
 
   mTrgIDs.Set(0);
+  mSimuTrgIDs.Set(0);
 
   for (Int_t ipmt=0; ipmt<mNZdcPmt; ipmt++) {
     mZdcEastADC[ipmt] = 0;
@@ -93,6 +94,7 @@ void StUPCEvent::clearEvent()
   // clear event variables
 
   mTrgIDs.Set(0);
+  mSimuTrgIDs.Set(0);
 
   mBemcMult = 0;
 
@@ -126,6 +128,21 @@ void StUPCEvent::addTriggerId(Int_t id) {
   mTrgIDs.AddAt(id, pos);
 
 }//addTriggerId
+
+//_____________________________________________________________________________
+void StUPCEvent::addSimuTriggerId(Int_t id) {
+  //add fired trigger ID
+
+  //position to put the ID
+  Int_t pos = mSimuTrgIDs.GetSize();
+
+  //extend the array
+  mSimuTrgIDs.Set(pos+1);
+
+  //put the ID
+  mSimuTrgIDs.AddAt(id, pos);
+
+}//addSimuTriggerId
 
 //_____________________________________________________________________________
 void StUPCEvent::setZDCEastADC(UShort_t signal, Int_t pmt) {
@@ -237,6 +254,16 @@ Bool_t StUPCEvent::isTrigger(Int_t id) const
   return kFALSE;
 
 }//setTrigger
+Bool_t StUPCEvent::isSimuTrigger(Int_t id) const
+{
+  //get fired simulated trigger ID
+  for(Int_t i = 0; i<mSimuTrgIDs.GetSize(); i++) {
+    if( mSimuTrgIDs.At(i) == id ) return kTRUE;
+  }
+
+  return kFALSE;
+
+}//setSimuTrigger
 
 //_____________________________________________________________________________
 Int_t StUPCEvent::getNumberOfTracks() const {
