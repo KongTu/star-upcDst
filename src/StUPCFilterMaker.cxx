@@ -37,7 +37,7 @@
 // #include "StTriggerUtilities/StTriggerSimuPlayMaker.h"
 // #include "StTriggerUtilities/StTriggerThreshold.h"
 // #include "StTriggerUtilities/StVirtualTriggerSimu.h"
-// #include "StTriggerUtilities/Bemc/StBemcTriggerSimu.h"
+#include "StTriggerUtilities/Bemc/StBemcTriggerSimu.h"
 // #include "StTriggerUtilities/Eemc/StEemcTriggerSimu.h"
 // #include "StTriggerUtilities/Emc/StEmcTriggerSimu.h"
 
