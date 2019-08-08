@@ -34,7 +34,7 @@
 #include "StEvent/StEventSummary.h"
 #include "StTriggerUtilities/StTriggerSimuMaker.h"
 #include "StTriggerUtilities/StTriggerSimuResult.h"
-#include "StTriggerUtilities/StTriggerSimuPlayResult.h"
+#include "StTriggerUtilities/StTriggerSimuPlayMaker.h"
 #include "StTriggerUtilities/StTriggerThreshold.h"
 #include "StTriggerUtilities/StVirtualTriggerSimu.h"
 #include "StTriggerUtilities/Bemc/StBemcTriggerSimu.h"
