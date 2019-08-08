@@ -29,7 +29,7 @@ TClonesArray *StUPCEvent::mgMCParticles = 0;
 StUPCEvent::StUPCEvent():
   mRunNum(0), mEvtNum(0), mFillNum(0), mbCrossId(0), mbCrossId7bit(0),
   mMagField(0), mZdcEastRate(0), mZdcWestRate(0), mZdcCoincRate(0),
-  mLastDSM0(0), mLastDSM1(0),  mLastDSM2(0), mLastDSM3(0),
+  mLastDSM0(0), mLastDSM1(0), mLastDSM2(0), mLastDSM3(0),
   mZdcEastUA(0), mZdcWestUA(0), mZdcEastTDC(0), mZdcWestTDC(0),
   mZdcTimeDiff(0), mZdcVertexZ(0),
   mBBCSmallEast(0), mBBCSmallWest(0), mBBCLargeEast(0), mBBCLargeWest(0),
