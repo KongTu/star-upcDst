@@ -22,10 +22,14 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
   gSystem->Load("StEmcADCtoEMaker");
   gSystem->Load("StPreEclMaker");
   gSystem->Load("StEpcMaker");
+  gSystem->Load("StEEmcUtil");
+  gSystem->Load("StEEmcDbMaker");
+  gSystem->Load("StEmcTriggerMaker");
+  gSystem->Load(".sl73_gcc485/lib/libStTriggerUtilities.so");
 
   //load the analysis maker compiled before with cons
   gSystem->Load("StUPCFilterMaker.so");
-  gSystem->Load(".sl73_gcc485/lib/libStTriggerUtilities.so");
+
 
   //create chain directory-like structure for maker
   //top level
