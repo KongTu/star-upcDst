@@ -61,10 +61,11 @@ private:
   vector<Int_t> mTrgRanHi; // upper limit for run range for a given trigger ID
 
   StUPCFilterTrgUtil *mTrgUtil;
+   //simuTrig
+  StTriggerSimuMaker *mSimuTrig;
   StUPCFilterBemcUtil *mBemcUtil; //utility class for BEMC matching
 
-  //simuTrig
-  StTriggerSimuMaker *mSimuTrig;
+
 
   ClassDef(StUPCFilterMaker, 1);
 
