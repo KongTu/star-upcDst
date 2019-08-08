@@ -13,6 +13,7 @@ class StMuTrack;
 class StUPCFilterTrgUtil;
 class StUPCFilterBemcUtil;
 class StTriggerSimuMaker;
+class StEEmcDbMaker;
 
 class StUPCFilterMaker: public StMaker {
 
