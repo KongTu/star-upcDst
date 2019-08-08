@@ -34,17 +34,14 @@
 #include "StEvent/StEventSummary.h"
 #include "StTriggerUtilities/StTriggerSimuMaker.h"
 #include "StTriggerUtilities/StTriggerSimuResult.h"
-#include "StTriggerUtilities/StTriggerSimuPlayMaker.h"
-#include "StTriggerUtilities/StTriggerThreshold.h"
-#include "StTriggerUtilities/StVirtualTriggerSimu.h"
-#include "StTriggerUtilities/Bemc/StBemcTriggerSimu.h"
-#include "StTriggerUtilities/Eemc/StEemcTriggerSimu.h"
-#include "StTriggerUtilities/Emc/StEmcTriggerSimu.h"
+// #include "StTriggerUtilities/StTriggerSimuPlayMaker.h"
+// #include "StTriggerUtilities/StTriggerThreshold.h"
+// #include "StTriggerUtilities/StVirtualTriggerSimu.h"
+// #include "StTriggerUtilities/Bemc/StBemcTriggerSimu.h"
+// #include "StTriggerUtilities/Eemc/StEemcTriggerSimu.h"
+// #include "StTriggerUtilities/Emc/StEmcTriggerSimu.h"
 
-#include <StEEmcUtil/database/StEEmcDb.h>
-#include <StEEmcUtil/database/EEmcDbCrate.h>
-#include <StEEmcUtil/database/EEmcDbItem.h>
-#include <StEEmcUtil/database/cstructs/eemcConstDB.hh>
+
 
 //local headers
 #include "StUPCEvent.h"
