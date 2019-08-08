@@ -11,7 +11,7 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
   //load libraries to work with muDst
   gROOT->Macro("loadMuDst.C");
   gROOT->Macro("LoadLogger.C");
-  
+
   // Load St_db_Maker and co
   gSystem->Load("StDbLib.so");
   gSystem->Load("StDbBroker.so");
@@ -44,6 +44,9 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
   // Maker to apply calibration
   StEmcADCtoEMaker *adc_to_e = new StEmcADCtoEMaker();
   adc_to_e->setPrint(kFALSE);
+
+  StEEmcDbMaker* eemcDb = new StEEmcDbMaker;
+  
   // Makers for clusterfinding
   StPreEclMaker *pre_ecl = new StPreEclMaker();
   pre_ecl->setPrint(kFALSE);
