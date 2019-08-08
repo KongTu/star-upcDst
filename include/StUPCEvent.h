@@ -40,6 +40,7 @@ public:
 
   void setLastDSM0(UShort_t dsm) { mLastDSM0 = dsm; }
   void setLastDSM1(UShort_t dsm) { mLastDSM1 = dsm; }
+  void setLastDSM2(UShort_t dsm) { mLastDSM2 = dsm; }
   void setLastDSM3(UShort_t dsm) { mLastDSM3 = dsm; }
 
   void setZDCUnAttEast(UShort_t signal) { mZdcEastUA = signal; }
@@ -95,6 +96,7 @@ public:
 
   UShort_t getLastDSM0() const { return mLastDSM0; }
   UShort_t getLastDSM1() const { return mLastDSM1; }
+  UShort_t getLastDSM2() const { return mLastDSM2; }
   UShort_t getLastDSM3() const { return mLastDSM3; }
 
   UShort_t getZDCUnAttEast() const { return mZdcEastUA; }
@@ -163,7 +165,8 @@ private:
 
   UShort_t mLastDSM0; // TCU bits 0-15 from StTriggerData::lastDSM(0)
   UShort_t mLastDSM1; // TCU bits 16-31
-  UShort_t mLastDSM3; // TCU bits 58-62
+  UShort_t mLastDSM2; // TCU bits 32-47
+  UShort_t mLastDSM3; // TCU bits 48-62
 
   UShort_t mZdcEastUA; // ZDC unattenuated signal, east
   UShort_t mZdcWestUA; // ZDC unattenuated signal, west

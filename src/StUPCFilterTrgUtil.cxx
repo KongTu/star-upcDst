@@ -26,6 +26,7 @@ void StUPCFilterTrgUtil::processEvent(const StTriggerData *trgdat, StUPCEvent *u
   //TCU bits
   upcEvt->setLastDSM0( trgdat->lastDSM(0) );
   upcEvt->setLastDSM1( trgdat->lastDSM(1) );
+  upcEvt->setLastDSM2( trgdat->lastDSM(2) );
   upcEvt->setLastDSM3( trgdat->lastDSM(3) );
 
   //ZDC
