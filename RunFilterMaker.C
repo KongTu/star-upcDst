@@ -18,6 +18,7 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
   gSystem->Load("St_db_Maker");
 
   // Load Emc libraries
+  gSystem->Load("StDetectorDbMaker");
   gSystem->Load("StDaqLib");
   gSystem->Load("StEmcRawMaker");
   gSystem->Load("StEmcADCtoEMaker");
@@ -32,12 +33,13 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
   //load the analysis maker compiled before with cons
   gSystem->Load("StUPCFilterMaker.so");
 
-
   //create chain directory-like structure for maker
   //top level
   StChain *chain = new StChain;
   //maker to access muDST data
   StMuDstMaker *maker = new StMuDstMaker(0, 0, "", filelist.c_str(), "", nFiles);
+  
+  StMuDbReader* muDstDb = StMuDbReader::instance();
 
   //St_db_Maker for Emc calibration
   St_db_Maker *db1 = new St_db_Maker("db","$HOME/StarDb","MySQL:StarDb","$STAR/StarDb");
