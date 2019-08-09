@@ -105,6 +105,7 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
   //apply data/mc selection
   cout << "RunFilterMaker, isMC: " << isMC << endl;
   anaMaker->setIsMC(isMC);
+  strig->setMC(isMC);
 
   Int_t nevt = maker->chain()->GetEntries();
   cout << "Number of events: " << nevt << endl;
