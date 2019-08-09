@@ -201,11 +201,9 @@ Int_t StUPCFilterMaker::Make()
     // run range for a given trigger ID
     if( mTrgRanLo[i] != 0 && runnum < mTrgRanLo[i] ) continue;
     if( mTrgRanHi[i] != 0 && runnum > mTrgRanHi[i] ) continue;
-
-    cout << "gets here ? " << mSimuTrig->isTrigger( mSimuTrgIDs[i] ) << endl;
     //test simulated trigger ID at 'i'
-    if( !mSimuTrig->isTrigger( mSimuTrgIDs[i] ) ) continue;
-
+    if( mIsMC == 0 && !mSimuTrig->isTrigger( mSimuTrgIDs[i] ) ) continue;
+    if( mIsMC > 0  && !mSimuTrig->emc->BJP2() ) continue;
     //simulated trigger ID was fired
     mUPCEvent->addSimuTriggerId( mSimuTrgIDs[i] );
 
