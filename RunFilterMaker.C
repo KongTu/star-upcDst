@@ -71,7 +71,7 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
   strig->bemc->setConfig(1);
 
   //analysis maker
-  anaMaker = new StUPCFilterMaker(maker, mSimuTrig, outfile); //maker for muDst passed to the constructor
+  anaMaker = new StUPCFilterMaker(maker, strig, outfile); //maker for muDst passed to the constructor
 
   //----------------------------------------------------------------------
   // analysis maker configuration, do not change default values here,
