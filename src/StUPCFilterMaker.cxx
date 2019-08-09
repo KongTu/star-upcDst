@@ -54,7 +54,7 @@ ClassImp(StUPCFilterMaker);
 StUPCFilterMaker::StUPCFilterMaker(StMuDstMaker *maker, string outnam) : StMaker("StReadMuDstMaker"),
   mMaker(maker), mMuDst(0x0), mIsMC(0), mOutName(outnam), mOutFile(0x0),
   mHistList(0x0), mCounter(0x0), mErrCounter(0x0),
-  mUPCEvent(0x0), mUPCTree(0x0), mTrgUtil(0x0), mSimuTrig(0), mBemcUtil(0x0)
+  mUPCEvent(0x0), mUPCTree(0x0), mTrgUtil(0x0), mSimuTrig(0x0), mBemcUtil(0x0)
 {
   //constructor
 
@@ -70,7 +70,6 @@ StUPCFilterMaker::~StUPCFilterMaker()
   LOG_INFO << "StUPCFilterMaker::~StUPCFilterMaker() destructor called" << endm;
 
   delete mTrgUtil; mTrgUtil=0;
-  delete mSimuTrig; mSimuTrig=0;
   delete mBemcUtil; mBemcUtil=0;
   delete mHistList; mHistList=0;
   delete mCounter; mCounter=0;
@@ -78,6 +77,8 @@ StUPCFilterMaker::~StUPCFilterMaker()
   delete mUPCTree; mUPCTree=0;
   delete mUPCEvent; mUPCEvent=0;
   delete mOutFile; mOutFile=0;
+  delete mSimuTrig; mSimuTrig=0;
+
 
 }//~StUPCFilterMaker
 
@@ -119,7 +120,7 @@ Int_t StUPCFilterMaker::Init() {
   if( mIsMC > 0 ) mUPCEvent->setIsMC( kTRUE );
 
   //simulate trigger
-  mSimuTrig = new StTriggerSimuMaker("StarTrigSimu");
+  mSimuTrig = (StTriggerSimuMaker*) GetMaker("StarTrigSimu");
 
   //create the tree
   mUPCTree = new TTree("mUPCTree", "mUPCTree");
@@ -197,7 +198,6 @@ Int_t StUPCFilterMaker::Make()
   //event passed the trigger
 
   //simulate trigger
-  // mSimuTrig = (StTriggerSimuMaker*) GetMaker("StarTrigSimu");
   mSimuTrig->useOfflineDB();
   mSimuTrig->setMC(mIsMC);
   mSimuTrig->useBemc();
