@@ -137,11 +137,6 @@ Int_t StUPCFilterMaker::Init() {
   mHistList->Add(mErrCounter);
 
   mSimuTrig = new StTriggerSimuMaker("StarTrigSimu");
-  mSimuTrig->useOfflineDB();
-  mSimuTrig->setMC(mIsMC);
-  mSimuTrig->useBemc();
-  mSimuTrig->useEemc(0);
-  mSimuTrig->bemc->setConfig(StBemcTriggerSimu::kOnline);
 
   return kStOk;
 
@@ -154,6 +149,7 @@ Int_t StUPCFilterMaker::Make()
 
   mUPCEvent->clearEvent(); //clear the output UPC event
   mBemcUtil->clear(); //clear data structures in BEMC util
+  mSimuTrig->clear();
 
   //input muDst data
   mMuDst = mMaker->muDst();
@@ -202,6 +198,11 @@ Int_t StUPCFilterMaker::Make()
   //event passed the trigger
 
   //simulate trigger
+  mSimuTrig->useOfflineDB();
+  mSimuTrig->setMC(mIsMC);
+  mSimuTrig->useBemc();
+  mSimuTrig->useEemc(0);
+  mSimuTrig->bemc->setConfig(StBemcTriggerSimu::kOnline);
   for(UInt_t i = 0; i<mSimuTrgIDs.size(); i++){
     // run range for a given trigger ID
     if( mTrgRanLo[i] != 0 && runnum < mTrgRanLo[i] ) continue;
