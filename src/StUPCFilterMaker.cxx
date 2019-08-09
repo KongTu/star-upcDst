@@ -52,10 +52,10 @@
 ClassImp(StUPCFilterMaker);
 
 //_____________________________________________________________________________
-StUPCFilterMaker::StUPCFilterMaker(StMuDstMaker *maker, string outnam) : StMaker("StReadMuDstMaker"),
+StUPCFilterMaker::StUPCFilterMaker(StMuDstMaker *maker, StTriggerSimuMaker *strig, string outnam) : StMaker("StReadMuDstMaker"),
   mMaker(maker), mMuDst(0x0), mIsMC(0), mOutName(outnam), mOutFile(0x0),
   mHistList(0x0), mCounter(0x0), mErrCounter(0x0),
-  mUPCEvent(0x0), mUPCTree(0x0), mTrgUtil(0x0), mSimuTrig(0x0), mBemcUtil(0x0)
+  mUPCEvent(0x0), mUPCTree(0x0), mTrgUtil(0x0), mSimuTrig(strig), mBemcUtil(0x0)
 {
   //constructor
 
@@ -78,7 +78,6 @@ StUPCFilterMaker::~StUPCFilterMaker()
   delete mUPCTree; mUPCTree=0;
   delete mUPCEvent; mUPCEvent=0;
   delete mOutFile; mOutFile=0;
-  delete mSimuTrig; mSimuTrig=0;
 
 
 }//~StUPCFilterMaker
@@ -119,10 +118,7 @@ Int_t StUPCFilterMaker::Init() {
   mUPCEvent = new StUPCEvent();
   //configure the UPC event
   if( mIsMC > 0 ) mUPCEvent->setIsMC( kTRUE );
-
-  mSimuTrig = new StTriggerSimuMaker("StarTrigSimu");
   
-
   //create the tree
   mUPCTree = new TTree("mUPCTree", "mUPCTree");
   //add branch with event objects
@@ -148,13 +144,6 @@ Int_t StUPCFilterMaker::Init() {
 Int_t StUPCFilterMaker::Make()
 {
   //called for each event
-
-  mSimuTrig->useOfflineDB();
-  mSimuTrig->setMC(0);
-  mSimuTrig->useBemc();
-  mSimuTrig->useEemc(0);
-  mSimuTrig->bemc->setConfig(1);
-
   mUPCEvent->clearEvent(); //clear the output UPC event
   mBemcUtil->clear(); //clear data structures in BEMC util
 
@@ -171,6 +160,9 @@ Int_t StUPCFilterMaker::Make()
     LOG_INFO << "StUPCFilterMaker::Make() no input event" << endm;
     mErrCounter->Fill( kErrNoEvt ); // no input event
     return kStErr;
+  }
+  if( !mSimuTrig ){
+    LOG_INFO << "StUPCFilterMaker::Make() no StTriggerSimuMaker loaded" << endm;
   }
 
   mCounter->Fill( kAna ); // analyzed events

@@ -18,7 +18,7 @@ class StUPCFilterMaker: public StMaker {
 
 public:
 
-  StUPCFilterMaker(StMuDstMaker *maker, string outnam="StUPC.root");
+  StUPCFilterMaker(StMuDstMaker *maker, StTriggerSimuMaker *strig, string outnam="StUPC.root");
   ~StUPCFilterMaker();
 
   void setIsMC(Int_t mc) { mIsMC = mc; }
