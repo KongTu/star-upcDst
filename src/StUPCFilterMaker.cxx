@@ -149,7 +149,7 @@ Int_t StUPCFilterMaker::Make()
 
   mUPCEvent->clearEvent(); //clear the output UPC event
   mBemcUtil->clear(); //clear data structures in BEMC util
-  mSimuTrig->clear();
+  mSimuTrig->clear("");
 
   //input muDst data
   mMuDst = mMaker->muDst();
