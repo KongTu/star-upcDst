@@ -24,6 +24,7 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
   gSystem->Load("StEmcRawMaker");
   gSystem->Load("StEmcADCtoEMaker");
   gSystem->Load("StDbBroker");
+  gSystem->Load("St_db_Maker");
   gSystem->Load("StPreEclMaker");
   gSystem->Load("StEpcMaker");
   gSystem->Load("StEEmcUtil");
