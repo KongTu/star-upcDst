@@ -28,9 +28,8 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
   gSystem->Load("StEEmcUtil");
   gSystem->Load("StEEmcDbMaker");
   gSystem->Load("StEmcTriggerMaker");
-  gSystem->Load("StTriggerFilterMaker");
-  gSystem->Load("StTriggerSimuMaker");
   gSystem->Load(".sl73_gcc485/lib/libStTriggerUtilities.so");
+  gSystem->Load("StTriggerFilterMaker");
 
   //load the analysis maker compiled before with cons
   gSystem->Load("StUPCFilterMaker.so");
