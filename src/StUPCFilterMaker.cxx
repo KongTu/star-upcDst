@@ -121,11 +121,11 @@ Int_t StUPCFilterMaker::Init() {
   if( mIsMC > 0 ) mUPCEvent->setIsMC( kTRUE );
 
   mSimuTrig = new StTriggerSimuMaker("StarTrigSimu");
-  mSimuTrig->useOfflineDB();
-  mSimuTrig->setMC(0);
-  mSimuTrig->useBemc();
-  mSimuTrig->useEemc(0);
-  mSimuTrig->bemc->setConfig(1);
+  // mSimuTrig->useOfflineDB();
+  // mSimuTrig->setMC(0);
+  // mSimuTrig->useBemc();
+  // mSimuTrig->useEemc(0);
+  // mSimuTrig->bemc->setConfig(1);
   
   //create the tree
   mUPCTree = new TTree("mUPCTree", "mUPCTree");
@@ -208,9 +208,9 @@ Int_t StUPCFilterMaker::Make()
     if( mTrgRanLo[i] != 0 && runnum < mTrgRanLo[i] ) continue;
     if( mTrgRanHi[i] != 0 && runnum > mTrgRanHi[i] ) continue;
     //test simulated trigger ID at 'i'
-    std::cout << "mSimuTrig->isTrigger( mSimuTrgIDs[i] ) ~ " << mSimuTrig->isTrigger( mSimuTrgIDs[i] ) << std::endl;
-    std::cout << "BJP2 ~ " << mSimuTrig->emc->BJP2() << std::endl;
-    if( !mSimuTrig->isTrigger( mSimuTrgIDs[i] ) ) continue;
+    // std::cout << "mSimuTrig->isTrigger( mSimuTrgIDs[i] ) ~ " << mSimuTrig->isTrigger( mSimuTrgIDs[i] ) << std::endl;
+    // std::cout << "BJP2 ~ " << mSimuTrig->emc->BJP2() << std::endl;
+    // if( !mSimuTrig->isTrigger( mSimuTrgIDs[i] ) ) continue;
 
 
     //simulated trigger ID was fired
