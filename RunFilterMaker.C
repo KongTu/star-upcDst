@@ -59,7 +59,7 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
   StEpcMaker *epc = new StEpcMaker();
   epc->setPrint(kFALSE);
 
-  StTriggerSimuMaker* simuTrig = (StTriggerSimuMaker*)GetMaker("StarTrigSimu");
+  StTriggerSimuMaker* simuTrig = new StTriggerSimuMaker("StarTrigSimu");
   simuTrig->useOfflineDB();
   simuTrig->setMC(0);
   simuTrig->useBemc();
