@@ -7,7 +7,7 @@
     echo "Starting the job"
     ls
     hostname
-    starpro
+    starver SL17f
     echo $STAR
     echo $OPTSTAR
     cons
