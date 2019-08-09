@@ -121,7 +121,12 @@ Int_t StUPCFilterMaker::Init() {
   if( mIsMC > 0 ) mUPCEvent->setIsMC( kTRUE );
 
   mSimuTrig = new StTriggerSimuMaker("StarTrigSimu");
-
+  mSimuTrig->useOfflineDB();
+  mSimuTrig->setMC(0);
+  mSimuTrig->useBemc();
+  mSimuTrig->useEemc(0);
+  mSimuTrig->bemc->setConfig(1);
+  
   //create the tree
   mUPCTree = new TTree("mUPCTree", "mUPCTree");
   //add branch with event objects
@@ -198,11 +203,6 @@ Int_t StUPCFilterMaker::Make()
   //event passed the trigger
 
   //simulate trigger
-  mSimuTrig->useOfflineDB();
-  mSimuTrig->setMC(0);
-  mSimuTrig->useBemc();
-  mSimuTrig->useEemc(0);
-  mSimuTrig->bemc->setConfig(1);
   for(UInt_t i = 0; i<mSimuTrgIDs.size(); i++){
     // run range for a given trigger ID
     if( mTrgRanLo[i] != 0 && runnum < mTrgRanLo[i] ) continue;
