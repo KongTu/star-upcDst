@@ -13,12 +13,7 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
   gROOT->Macro("loadMuDst.C");
   gROOT->Macro("LoadLogger.C");
 
-  // Load St_db_Maker and co
-  // gSystem->Load("StDbLib.so");
-  // gSystem->Load("StDbBroker.so");
-  // gSystem->Load("St_db_Maker");
-
-  // Load Emc libraries
+  // Load libraries
   gSystem->Load("StDetectorDbMaker");
   gSystem->Load("StDaqLib");
   gSystem->Load("StEmcRawMaker");
@@ -30,7 +25,7 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
   gSystem->Load("StEEmcUtil");
   gSystem->Load("StEEmcDbMaker");
   gSystem->Load("StEmcTriggerMaker");
-  gSystem->Load(".sl73_gcc485/lib/libStTriggerUtilities.so");
+  gSystem->Load(".sl73_gcc485/lib/libStTriggerUtilities.so");//use local StTriggerUtilities
   gSystem->Load("StTriggerFilterMaker");
 
   //load the analysis maker compiled before with cons
@@ -51,11 +46,8 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
 
   // Maker to apply calibration
   StEmcADCtoEMaker *adc_to_e = new StEmcADCtoEMaker();
-  // adc_to_e->setPrint(kFALSE);
+  adc_to_e->setPrint(kFALSE);
   adc_to_e->saveAllStEvent(true);
-
-  //St_db_Maker for Emc calibration
-  // St_db_Maker *db1 = new St_db_Maker("db","$HOME/StarDb","MySQL:StarDb","$STAR/StarDb");
 
   // Makers for clusterfinding
   StPreEclMaker *pre_ecl = new StPreEclMaker();
@@ -141,11 +133,6 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
 
   //release allocated memory
   delete chain;
-  delete simuTrig;
-
-
-
-
 
 
 
