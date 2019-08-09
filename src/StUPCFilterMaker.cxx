@@ -199,9 +199,9 @@ Int_t StUPCFilterMaker::Make()
   //simulate trigger
   mSimuTrig->useOfflineDB();
   mSimuTrig->setMC(mIsMC);
-  // mSimuTrig->useBemc();
-  // mSimuTrig->useEemc();
-  // mSimuTrig->bemc->setConfig(StBemcTriggerSimu::kOnline);
+  mSimuTrig->useBemc();
+  mSimuTrig->useEemc(0);
+  mSimuTrig->bemc->setConfig(StBemcTriggerSimu::kOnline);
 
   for(UInt_t i = 0; i<mSimuTrgIDs.size(); i++){
     // run range for a given trigger ID
