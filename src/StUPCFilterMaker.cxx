@@ -119,6 +119,13 @@ Int_t StUPCFilterMaker::Init() {
   //configure the UPC event
   if( mIsMC > 0 ) mUPCEvent->setIsMC( kTRUE );
 
+  mSimuTrig = new StTriggerSimuMaker("StarTrigSimu");
+  mSimuTrig->useOfflineDB();
+  mSimuTrig->setMC(mIsMC);
+  mSimuTrig->useBemc();
+  mSimuTrig->useEemc(0);
+  mSimuTrig->bemc->setConfig(StBemcTriggerSimu::kOnline);
+
   //create the tree
   mUPCTree = new TTree("mUPCTree", "mUPCTree");
   //add branch with event objects
@@ -135,8 +142,6 @@ Int_t StUPCFilterMaker::Init() {
   //counter for errors encountered during the analysis
   mErrCounter = new TH1I("mErrCounter", "mErrCounter", kMaxErrCnt-1, 1, kMaxErrCnt);
   mHistList->Add(mErrCounter);
-
-  mSimuTrig = new StTriggerSimuMaker("StarTrigSimu");
 
   return kStOk;
 
@@ -198,11 +203,7 @@ Int_t StUPCFilterMaker::Make()
   //event passed the trigger
 
   //simulate trigger
-  mSimuTrig->useOfflineDB();
-  mSimuTrig->setMC(mIsMC);
-  mSimuTrig->useBemc();
-  mSimuTrig->useEemc(0);
-  mSimuTrig->bemc->setConfig(StBemcTriggerSimu::kOnline);
+
   for(UInt_t i = 0; i<mSimuTrgIDs.size(); i++){
     // run range for a given trigger ID
     if( mTrgRanLo[i] != 0 && runnum < mTrgRanLo[i] ) continue;
