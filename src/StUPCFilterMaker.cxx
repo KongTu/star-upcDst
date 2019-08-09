@@ -136,6 +136,8 @@ Int_t StUPCFilterMaker::Init() {
   mErrCounter = new TH1I("mErrCounter", "mErrCounter", kMaxErrCnt-1, 1, kMaxErrCnt);
   mHistList->Add(mErrCounter);
 
+  mSimuTrig = new StTriggerSimuMaker("StarTrigSimu");
+
   return kStOk;
 
 }//Init
@@ -195,7 +197,7 @@ Int_t StUPCFilterMaker::Make()
   //event passed the trigger
 
   //simulate trigger
-  mSimuTrig = (StTriggerSimuMaker*) GetMaker("StarTrigSimu");
+  // mSimuTrig = (StTriggerSimuMaker*) GetMaker("StarTrigSimu");
   mSimuTrig->useOfflineDB();
   mSimuTrig->setMC(mIsMC);
   mSimuTrig->useBemc();
