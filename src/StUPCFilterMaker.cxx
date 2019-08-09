@@ -266,7 +266,7 @@ Int_t StUPCFilterMaker::Make()
   //magnetic field for track projection to BEMC
   mBemcUtil->setMagField( evtSummary.magneticField()/10. ); //conversion ok, checked by track->pt() and emcPt
   //fill structures with clusters and hits
-  if( mBemcUtil->processEvent(mMuDst, mUPCEvent) ) mCounter->Fill( kBemc ); // events having BEMC clusters
+  if( mBemcUtil->processEvent(mMuDst, mUPCEvent, mSimuTrig) ) mCounter->Fill( kBemc ); // events having BEMC clusters
 
   //mark primary vertices with at least one TOF or BEMC matched track
   map<UInt_t, Bool_t> vtxMap;
