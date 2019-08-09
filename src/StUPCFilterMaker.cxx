@@ -199,7 +199,7 @@ Int_t StUPCFilterMaker::Make()
   //simulate trigger
   mSimuTrig->useOfflineDB();
   mSimuTrig->setMC(mIsMC);
-  // mSimuTrig->useBemc();
+  mSimuTrig->useBemc();
   mSimuTrig->useEemc(0);
   mSimuTrig->bemc->setConfig(StBemcTriggerSimu::kOnline);
 
