@@ -6,6 +6,7 @@ class StEmcGeom;
 class StMuDst;
 class StMuTrack;
 class StUPCEvent;
+class StTriggerSimuMaker;
 
 class StUPCFilterBemcUtil {
 
@@ -16,7 +17,7 @@ public:
 
   void clear();
   void setMagField(Double_t mfield) {mMagField = mfield;}
-  Bool_t processEvent(StMuDst *muDst, StUPCEvent *upcEvt);
+  Bool_t processEvent(StMuDst *muDst, StUPCEvent *upcEvt, StTriggerSimuMaker *strig);
   Short_t matchBEMC(StMuTrack *track, Double_t &emcPhi, Double_t &emcEta, Double_t &emcPt, Bool_t &proj, UInt_t &clsId, Float_t &hitE);
   void writeBEMC(StUPCEvent *upcEvt);
 
@@ -44,7 +45,7 @@ private:
   //BEMC clusters, structure and vector for writing clusters to UPC trees,
   //it allows to write only clusters matched to a track
   struct emcCluster {
-    emcCluster(): clsEta(0), clsPhi(0), clsSigmaEta(0), clsSigmaPhi(0), clsE(0), clsAdc0(0), isMatched(0),
+    emcCluster(): clsEta(0), clsPhi(0), clsSigmaEta(0), clsSigmaPhi(0), clsE(0), clsAdc0(0), clasDsmAdc0(0), isMatched(0),
       clsHT(0), clsHTsoftID(0) {}
     Float_t clsEta;
     Float_t clsPhi;
@@ -52,6 +53,7 @@ private:
     Float_t clsSigmaPhi;
     Float_t clsE;
     Int_t clsAdc0;
+    Int_t clasDsmAdc0;
     Bool_t isMatched;
     Float_t clsHT;
     Int_t clsHTsoftID;

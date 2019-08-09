@@ -57,7 +57,7 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
 
   StTriggerSimuMaker* strig = new StTriggerSimuMaker("StarTrigSimu");
   strig->useOfflineDB();
-  strig->setMC(0);
+  strig->setMC(0);//will be overwiritten according to isMC later
   strig->useBemc();
   strig->useEemc(0);
   strig->bemc->setConfig(1);
