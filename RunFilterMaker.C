@@ -136,6 +136,7 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
 
   //release allocated memory
   delete chain;
+  delete simuTrig;
 
 
 
