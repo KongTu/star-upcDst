@@ -10,6 +10,7 @@
 #include "string.h"
 #include <vector>
 #include <map>
+#include <iostream>
 
 //root headers
 #include "TObjArray.h"
@@ -208,7 +209,9 @@ Int_t StUPCFilterMaker::Make()
     if( mTrgRanLo[i] != 0 && runnum < mTrgRanLo[i] ) continue;
     if( mTrgRanHi[i] != 0 && runnum > mTrgRanHi[i] ) continue;
     //test simulated trigger ID at 'i'
+    std::cout << "mSimuTrig->isTrigger( mSimuTrgIDs[i] ) ~ " << mSimuTrig->isTrigger( 530703 ) << std::endl;
     if( !mSimuTrig->isTrigger( mSimuTrgIDs[i] ) ) continue;
+
 
     //simulated trigger ID was fired
     mUPCEvent->addSimuTriggerId( mSimuTrgIDs[i] );
