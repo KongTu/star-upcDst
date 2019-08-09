@@ -2,6 +2,7 @@
 #include "TArgumentParser.h"
 
 class StUPCFilterMaker;
+class StTriggerSimuMaker;
 StUPCFilterMaker *anaMaker;
 void AddTrigger(UInt_t id, Int_t rmin, Int_t rmax);
 
