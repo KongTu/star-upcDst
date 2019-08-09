@@ -8,13 +8,13 @@
 #define DSM_LAYER_E001_2009_HH
 
 #include "DSMLayer.hh"
-// #ifdef __ROOT__
-// #include "RTS/trg/include/trgDataDefs.h"
-// #include "RTS/trg/include/trgConfNum.h"
-// #else
+#ifdef __ROOT__
+#include "RTS/trg/include/trgDataDefs.h"
+#include "RTS/trg/include/trgConfNum.h"
+#else
 #include "trgDataDefs.h"
 #include "trgConfNum.h"
-// #endif
+#endif
 
 struct DSMLayer_E001_2009 : public DSMLayer<TriggerDataBlk> {
   DSMLayer_E001_2009();
