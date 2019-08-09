@@ -119,9 +119,6 @@ Int_t StUPCFilterMaker::Init() {
   //configure the UPC event
   if( mIsMC > 0 ) mUPCEvent->setIsMC( kTRUE );
 
-  //simulate trigger
-  mSimuTrig = new StTriggerSimuMaker();
-
   //create the tree
   mUPCTree = new TTree("mUPCTree", "mUPCTree");
   //add branch with event objects
@@ -198,6 +195,7 @@ Int_t StUPCFilterMaker::Make()
   //event passed the trigger
 
   //simulate trigger
+  mSimuTrig = new StTriggerSimuMaker("StarTrigSimu");
   mSimuTrig->useOfflineDB();
   mSimuTrig->setMC(mIsMC);
   mSimuTrig->useBemc();
