@@ -54,7 +54,7 @@ ClassImp(StUPCFilterMaker);
 StUPCFilterMaker::StUPCFilterMaker(StMuDstMaker *maker, string outnam) : StMaker("StReadMuDstMaker"),
   mMaker(maker), mMuDst(0x0), mIsMC(0), mOutName(outnam), mOutFile(0x0),
   mHistList(0x0), mCounter(0x0), mErrCounter(0x0),
-  mUPCEvent(0x0), mUPCTree(0x0), mTrgUtil(0x0), mSimuTrig(0x0), mBemcUtil(0x0)
+  mUPCEvent(0x0), mUPCTree(0x0), mTrgUtil(0x0), mSimuTrig(0), mBemcUtil(0x0)
 {
   //constructor
 
@@ -197,7 +197,7 @@ Int_t StUPCFilterMaker::Make()
   //event passed the trigger
 
   //simulate trigger
-  mSimuTrig = (StTriggerSimuMaker*)GetMaker("StarTrigSimu");
+  // mSimuTrig = (StTriggerSimuMaker*) GetMaker("StarTrigSimu");
   mSimuTrig->useOfflineDB();
   mSimuTrig->setMC(mIsMC);
   mSimuTrig->useBemc();
