@@ -197,8 +197,8 @@ Int_t StUPCFilterMaker::Make()
   //event passed the trigger
 
   //simulate trigger
-  // mSimuTrig->useOfflineDB();
-  // mSimuTrig->setMC(mIsMC);
+  mSimuTrig->useOfflineDB();
+  mSimuTrig->setMC(mIsMC);
   // mSimuTrig->useBemc();
   // mSimuTrig->useEemc();
   // mSimuTrig->bemc->setConfig(StBemcTriggerSimu::kOnline);
@@ -208,7 +208,7 @@ Int_t StUPCFilterMaker::Make()
     if( mTrgRanLo[i] != 0 && runnum < mTrgRanLo[i] ) continue;
     if( mTrgRanHi[i] != 0 && runnum > mTrgRanHi[i] ) continue;
     //test simulated trigger ID at 'i'
-    // if( !mSimuTrig->isTrigger( mSimuTrgIDs[i] ) ) continue;
+    if( !mSimuTrig->isTrigger( mSimuTrgIDs[i] ) ) continue;
 
     //simulated trigger ID was fired
     mUPCEvent->addSimuTriggerId( mSimuTrgIDs[i] );
