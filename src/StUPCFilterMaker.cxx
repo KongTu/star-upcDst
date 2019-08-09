@@ -120,7 +120,7 @@ Int_t StUPCFilterMaker::Init() {
   if( mIsMC > 0 ) mUPCEvent->setIsMC( kTRUE );
 
   //simulate trigger
-  mSimuTrig = (StTriggerSimuMaker*) GetMaker("StarTrigSimu");
+  mSimuTrig = new StTriggerSimuMaker();
 
   //create the tree
   mUPCTree = new TTree("mUPCTree", "mUPCTree");
