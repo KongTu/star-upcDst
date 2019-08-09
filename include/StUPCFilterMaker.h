@@ -62,7 +62,7 @@ private:
 
   StUPCFilterTrgUtil *mTrgUtil;
    //simuTrig
-  StTriggerSimuMaker *mSimuTrig = (StTriggerSimuMaker*)GetMaker("StarTrigSimu");
+  StTriggerSimuMaker *mSimuTrig;
   StUPCFilterBemcUtil *mBemcUtil; //utility class for BEMC matching
 
 

@@ -197,6 +197,7 @@ Int_t StUPCFilterMaker::Make()
   //event passed the trigger
 
   //simulate trigger
+  mSimuTrig = (StTriggerSimuMaker*)GetMaker("StarTrigSimu");
   mSimuTrig->useOfflineDB();
   mSimuTrig->setMC(mIsMC);
   mSimuTrig->useBemc();
