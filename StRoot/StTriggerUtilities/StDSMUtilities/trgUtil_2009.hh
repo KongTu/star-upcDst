@@ -14,13 +14,13 @@
 
 using namespace std;
 
-#ifdef __ROOT__
-#include "RTS/trg/include/trgDataDefs.h"
-#include "RTS/trg/include/trgConfNum.h"
-#else
+// #ifdef __ROOT__
+// #include "RTS/trg/include/trgDataDefs.h"
+// #include "RTS/trg/include/trgConfNum.h"
+// #else
 #include "trgDataDefs.h"
 #include "trgConfNum.h"
-#endif
+// #endif
 
 inline unsigned short bswap16(unsigned short x) { return bswap_16(x); }
 inline unsigned int   bswap32(unsigned int   x) { return bswap_32(x); }
