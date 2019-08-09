@@ -14,15 +14,16 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
   gROOT->Macro("LoadLogger.C");
 
   // Load St_db_Maker and co
-  gSystem->Load("StDbLib.so");
-  gSystem->Load("StDbBroker.so");
-  gSystem->Load("St_db_Maker");
+  // gSystem->Load("StDbLib.so");
+  // gSystem->Load("StDbBroker.so");
+  // gSystem->Load("St_db_Maker");
 
   // Load Emc libraries
   gSystem->Load("StDetectorDbMaker");
   gSystem->Load("StDaqLib");
   gSystem->Load("StEmcRawMaker");
   gSystem->Load("StEmcADCtoEMaker");
+  gSystem->Load("StDbBroker");
   gSystem->Load("StPreEclMaker");
   gSystem->Load("StEpcMaker");
   gSystem->Load("StEEmcUtil");
@@ -51,7 +52,8 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
   StMuDstMaker *maker = new StMuDstMaker(0, 0, "", filelist.c_str(), "", nFiles);
   
   //St_db_Maker for Emc calibration
-  St_db_Maker *db1 = new St_db_Maker("db","$HOME/StarDb","MySQL:StarDb","$STAR/StarDb");
+  // St_db_Maker *db1 = new St_db_Maker("db","$HOME/StarDb","MySQL:StarDb","$STAR/StarDb");
+  St_db_Maker* starDb = new St_db_Maker("StarDb","MySQL:StarDb");
 
   // Makers for clusterfinding
   StPreEclMaker *pre_ecl = new StPreEclMaker();
