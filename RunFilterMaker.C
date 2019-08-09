@@ -64,7 +64,12 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
   epc->setPrint(kFALSE);
 
   StTriggerSimuMaker* simuTrig = new StTriggerSimuMaker("StarTrigSimu");
-
+  mSimuTrig->useOfflineDB();
+  mSimuTrig->setMC(0);
+  mSimuTrig->useBemc();
+  mSimuTrig->useEemc(0);
+  mSimuTrig->bemc->setConfig(1);
+  
   //analysis maker
   anaMaker = new StUPCFilterMaker(maker, outfile); //maker for muDst passed to the constructor
 
