@@ -121,10 +121,10 @@ Int_t StUPCFilterMaker::Init() {
 
   mSimuTrig = new StTriggerSimuMaker("StarTrigSimu");
   mSimuTrig->useOfflineDB();
-  mSimuTrig->setMC(mIsMC);
+  mSimuTrig->setMC(0);
   mSimuTrig->useBemc();
   mSimuTrig->useEemc(0);
-  mSimuTrig->bemc->setConfig(StBemcTriggerSimu::kOnline);
+  mSimuTrig->bemc->setConfig(StBemcTriggerSimu::kOffline);
 
   //create the tree
   mUPCTree = new TTree("mUPCTree", "mUPCTree");
@@ -154,7 +154,6 @@ Int_t StUPCFilterMaker::Make()
 
   mUPCEvent->clearEvent(); //clear the output UPC event
   mBemcUtil->clear(); //clear data structures in BEMC util
-  mSimuTrig->Clear();
 
   //input muDst data
   mMuDst = mMaker->muDst();
