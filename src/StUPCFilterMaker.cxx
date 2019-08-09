@@ -200,7 +200,7 @@ Int_t StUPCFilterMaker::Make()
   mSimuTrig->useOfflineDB();
   mSimuTrig->setMC(mIsMC);
   mSimuTrig->useBemc();
-  mSimuTrig->useEemc(0);
+  // mSimuTrig->useEemc(0);
   mSimuTrig->bemc->setConfig(StBemcTriggerSimu::kOnline);
 
   for(UInt_t i = 0; i<mSimuTrgIDs.size(); i++){
