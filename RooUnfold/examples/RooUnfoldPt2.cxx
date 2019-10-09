@@ -101,7 +101,7 @@ void RooUnfoldPt2()
   TH1D* hTruth = new TH1D("hTruth","hTruth",pt2TruthNbins,pt2bins_truth);
   TH1D* hMeasu = new TH1D("hMeasu","hMeasu",pt2MeasuNbins,pt2bins_measu);
 
-  RooUnfoldResponse response (hMeasu, hTruth);
+  RooUnfoldResponse response (10,0,2);
   
   for(int i=0;i<tree->GetEntries();i++){
     tree->GetEntry(i);
