@@ -74,25 +74,25 @@ void RooUnfoldPt2()
   Double32_t mREC_OS_pz_tiny[100];
   Double32_t mREC_OS_E_tiny[100];
 
-  tree->Branch("mMCnTrack_tiny",&mMCnTrack_tiny);
-  tree->Branch("mMCnOS_tiny",&mMCnOS_tiny);
-  tree->Branch("mMC_px_tiny",&mMC_px_tiny);
-  tree->Branch("mMC_py_tiny",&mMC_py_tiny);
-  tree->Branch("mMC_pz_tiny",&mMC_pz_tiny);
-  tree->Branch("mMC_E_tiny",&mMC_E_tiny);
+  tree->SetBranchAddress("mMCnTrack_tiny",&mMCnTrack_tiny);
+  tree->SetBranchAddress("mMCnOS_tiny",&mMCnOS_tiny);
+  tree->SetBranchAddress("mMC_px_tiny",&mMC_px_tiny);
+  tree->SetBranchAddress("mMC_py_tiny",&mMC_py_tiny);
+  tree->SetBranchAddress("mMC_pz_tiny",&mMC_pz_tiny);
+  tree->SetBranchAddress("mMC_E_tiny",&mMC_E_tiny);
   
-  tree->Branch("eventPass_tiny",&eventPass_tiny);
-  tree->Branch("mRECnTracks_tiny",&mRECnTracks_tiny);
-  tree->Branch("mRECnSS_tiny",&mRECnSS_tiny);
-  tree->Branch("mRECnOS_tiny",&mRECnOS_tiny);
-  tree->Branch("mREC_SS_px_tiny",&mREC_SS_px_tiny);
-  tree->Branch("mREC_SS_py_tiny",&mREC_SS_py_tiny);
-  tree->Branch("mREC_SS_pz_tiny",&mREC_SS_pz_tiny);
-  tree->Branch("mREC_SS_E_tiny",&mREC_SS_E_tiny);
-  tree->Branch("mREC_OS_px_tiny",&mREC_OS_px_tiny);
-  tree->Branch("mREC_OS_py_tiny",&mREC_OS_py_tiny);
-  tree->Branch("mREC_OS_pz_tiny",&mREC_OS_pz_tiny);
-  tree->Branch("mREC_OS_E_tiny",&mREC_OS_E_tiny);
+  tree->SetBranchAddress("eventPass_tiny",&eventPass_tiny);
+  tree->SetBranchAddress("mRECnTracks_tiny",&mRECnTracks_tiny);
+  tree->SetBranchAddress("mRECnSS_tiny",&mRECnSS_tiny);
+  tree->SetBranchAddress("mRECnOS_tiny",&mRECnOS_tiny);
+  tree->SetBranchAddress("mREC_SS_px_tiny",&mREC_SS_px_tiny);
+  tree->SetBranchAddress("mREC_SS_py_tiny",&mREC_SS_py_tiny);
+  tree->SetBranchAddress("mREC_SS_pz_tiny",&mREC_SS_pz_tiny);
+  tree->SetBranchAddress("mREC_SS_E_tiny",&mREC_SS_E_tiny);
+  tree->SetBranchAddress("mREC_OS_px_tiny",&mREC_OS_px_tiny);
+  tree->SetBranchAddress("mREC_OS_py_tiny",&mREC_OS_py_tiny);
+  tree->SetBranchAddress("mREC_OS_pz_tiny",&mREC_OS_pz_tiny);
+  tree->SetBranchAddress("mREC_OS_E_tiny",&mREC_OS_E_tiny);
 
   cout << "==================================== TRAIN ====================================" << endl;
   int pt2TruthNbins = sizeof(pt2bins_truth)/sizeof(pt2bins_truth[0]) - 1;
