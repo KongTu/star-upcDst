@@ -51,7 +51,7 @@ Double_t smear (Double_t xt)
 
 void RooUnfoldPt2()
 {
-  TFile* file_emb = new TFile("../../macros/upc-dst-tinyTree-emb.root");
+  TFile* file_emb = new TFile("../macros/upc-dst-tinyTree-emb.root");
   TTree* tree = (TTree*) file_emb->Get("tinyTree");
 
   Int_t mMCnOS_tiny;
@@ -101,8 +101,7 @@ void RooUnfoldPt2()
   TH1D* hTruth = new TH1D("hTruth","hTruth",pt2TruthNbins,pt2bins_truth);
   TH1D* hMeasu = new TH1D("hMeasu","hMeasu",pt2MeasuNbins,pt2bins_measu);
 
-  // RooUnfoldResponse response (10, 0.0, 2.0);
-  RooUnfoldResponse response (40, -10.0, 10.0);
+  RooUnfoldResponse response (hMeasu, hTruth);
   
   for(int i=0;i<tree->GetEntries();i++){
     tree->GetEntry(i);
@@ -132,7 +131,7 @@ void RooUnfoldPt2()
   // }
 
   cout << "==================================== UNFOLD ===================================" << endl;
-  RooUnfoldBayes   unfold (&response, hMeas, 4);    // OR
+  // RooUnfoldBayes   unfold (&response, hMeas, 4);    // OR
 //RooUnfoldSvd     unfold (&response, hMeas, 20);   // OR
 //RooUnfoldTUnfold unfold (&response, hMeas);       // OR
 //RooUnfoldIds     unfold (&response, hMeas, 1);
