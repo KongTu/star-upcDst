@@ -51,7 +51,7 @@ Double_t smear (Double_t xt)
 
 void RooUnfoldPt2()
 {
-  TFile* file_emb = new TFile("../../upc-dst-tinyTree-emb.root");
+  TFile* file_emb = new TFile("../../macros/upc-dst-tinyTree-emb.root");
   TTree* tree = (TTree*) file_emb->Get("tinyTree");
 
   Int_t mMCnOS_tiny;
