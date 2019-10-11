@@ -103,48 +103,62 @@ void RooUnfoldPt2()
 
   RooUnfoldResponse response (hMeasu, hTruth);
   
+  
   for(int i=0;i<tree->GetEntries();i++){
     tree->GetEntry(i);
 
     if(eventPass_tiny!=1) continue;
 
-  }
+    vector< TLorentzVector> pMC_collection, pREC_collection;
+    TLorentzVector pMC,pREC;
+    for(int imc=0;imc<mMCnOS_tiny;imc++){
+      pMC.clear();
+      pMC.SetPxPyPzE(mMC_px_tiny[imc],mMC_py_tiny[imc],mMC_pz_tiny[imc],mMC_E_tiny[imc]);
+      pMC_collection.push_back( pMC );
+    }
+    if(int irec=0;irec<mRECnOS_tiny;irec++){
+      pREC.clear();
+      pREC.SetPxPyPzE(mREC_OS_px_tiny[irec],mREC_OS_py_tiny[irec],mREC_OS_pz_tiny[irec],mREC_OS_E_tiny[irec]);
+      pREC_collection.push_back( pREC );
+    }
 
-  // Train with a Breit-Wigner, mean 0.3 and width 2.5.
-  for (Int_t i= 0; i<100000; i++) {
-    Double_t xt= gRandom->BreitWigner (0.3, 2.5);
-    Double_t x= smear (xt);
-    if (x!=cutdummy)
-      response.Fill (x, xt);
-    else
-      response.Miss (xt);
+    if( pREC_collection.size() != 0 ){
+      double pt2REC = pREC_collection[0].Pt()*pREC_collection[0].Pt();
+      double pt2MC  = pMC_collection[0].Pt()*pMC_collection[0].Pt();
+      response.Fill(pt2REC,pt2MC);
+    }
+    else{
+      if( pMC_collection.size() != 0){
+        double pt2MC  = pMC_collection[0].Pt()*pMC_collection[0].Pt();
+        response.Miss(pt2MC);
+      }
+    }
   }
 
   cout << "==================================== TEST =====================================" << endl;
-  TH1D* hTrue= new TH1D ("true", "Test Truth",    40, -10.0, 10.0);
-  TH1D* hMeas= new TH1D ("meas", "Test Measured", 40, -10.0, 10.0);
-  // Test with a Gaussian, mean 0 and width 2.
-  // for (Int_t i=0; i<10000; i++) {
-  //   Double_t xt= gRandom->Gaus (0.0, 2.0), x= smear (xt);
-  //   hTrue->Fill(xt);
-  //   if (x!=cutdummy) hMeas->Fill(x);
-  // }
+  TFile* file_test = new TFile("upc-dst-histo-jpsi_emb_zerobias_cohNincoh.root");
+  TH1D* hMeasured = (TH1D*) file_test->Get("hDielectronPt2");
+  TH1D* hTrue = (TH1D*) file_test->Get("hMCDielectronPt2");
+  for(int j=0;j<hMeasured->GetNbinsX();j++){
+    hMeasured->SetBinContent(j+1, hMeasured->GetBinContent(j+1)/(hMeasured->GetBinWidth(j+1)) );
+    hMeasured->SetBinError(j+1, hMeasured->GetBinError(j+1)/(hMeasured->GetBinWidth(j+1)) );
+  }
 
   cout << "==================================== UNFOLD ===================================" << endl;
-  // RooUnfoldBayes   unfold (&response, hMeas, 4);    // OR
+  RooUnfoldBayes   unfold (&response, hMeasured, 4);    // OR
 //RooUnfoldSvd     unfold (&response, hMeas, 20);   // OR
 //RooUnfoldTUnfold unfold (&response, hMeas);       // OR
 //RooUnfoldIds     unfold (&response, hMeas, 1);
 
-  // TH1D* hReco= (TH1D*) unfold.Hreco();
+  TH1D* hReco= (TH1D*) unfold.Hreco();
 
-  // TCanvas* c1= new TCanvas("canvas","canvas");
+  TCanvas* c1= new TCanvas("canvas","canvas");
 
-  // unfold.PrintTable (cout, hTrue);
-  // hReco->Draw();
-  // hMeas->Draw("SAME");
-  // hTrue->SetLineColor(8);
-  // hTrue->Draw("SAME");
+  unfold.PrintTable (cout, hTrue);
+  hReco->Draw();
+  hMeasured->Draw("SAME");
+  hTrue->SetLineColor(8);
+  hTrue->Draw("SAME");
 
   // c1->SaveAs("RooUnfoldExample.pdf");
 
