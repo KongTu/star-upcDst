@@ -172,6 +172,9 @@ void RooUnfoldPt2()
   for(int j=0;j<hMeasured->GetNbinsX();j++){
     hMeasured->SetBinContent(j+1, hMeasured->GetBinContent(j+1)/(hMeasured->GetBinWidth(j+1)) );
     hMeasured->SetBinError(j+1, hMeasured->GetBinError(j+1)/(hMeasured->GetBinWidth(j+1)) );
+
+    hTrue->SetBinContent(j+1, hTrue->GetBinContent(j+1)/(hTrue->GetBinWidth(j+1)) );
+    hTrue->SetBinError(j+1, hTrue->GetBinError(j+1)/(hTrue->GetBinWidth(j+1)) );
   }
 
   cout << "==================================== UNFOLD ===================================" << endl;
@@ -185,7 +188,8 @@ void RooUnfoldPt2()
   TCanvas* c1= new TCanvas("canvas","canvas");
 
   unfold.PrintTable (cout, hTrue);
-  hReco->Draw();
+  hReco->SetMarkerStyle(20);
+  hReco->Draw("P");
   hMeasured->Draw("SAME");
   hTrue->SetLineColor(8);
   hTrue->Draw("SAME");
