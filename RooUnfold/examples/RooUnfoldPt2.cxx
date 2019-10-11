@@ -112,12 +112,12 @@ void RooUnfoldPt2()
     vector< TLorentzVector> pMC_collection, pREC_collection;
     TLorentzVector pMC,pREC;
     for(int imc=0;imc<mMCnOS_tiny;imc++){
-      pMC.clear();
+      pMC.Clear();
       pMC.SetPxPyPzE(mMC_px_tiny[imc],mMC_py_tiny[imc],mMC_pz_tiny[imc],mMC_E_tiny[imc]);
       pMC_collection.push_back( pMC );
     }
     if(int irec=0;irec<mRECnOS_tiny;irec++){
-      pREC.clear();
+      pREC.Clear();
       pREC.SetPxPyPzE(mREC_OS_px_tiny[irec],mREC_OS_py_tiny[irec],mREC_OS_pz_tiny[irec],mREC_OS_E_tiny[irec]);
       pREC_collection.push_back( pREC );
     }
