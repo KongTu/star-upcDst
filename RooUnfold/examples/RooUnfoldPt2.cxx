@@ -181,11 +181,11 @@ void RooUnfoldPt2()
   TH1D* hMeasured = (TH1D*) file_test->Get("hDielectronPt2");
   TH1D* hTrue = (TH1D*) file_test->Get("hMCDielectronPt2");
   for(int j=0;j<hMeasured->GetNbinsX();j++){
-    hMeasured->SetBinContent(j+1, hMeasured->GetBinContent(j+1)/(hMeasured->GetBinWidth(j+1)) );
-    hMeasured->SetBinError(j+1, hMeasured->GetBinError(j+1)/(hMeasured->GetBinWidth(j+1)) );
+    // hMeasured->SetBinContent(j+1, hMeasured->GetBinContent(j+1)/(hMeasured->GetBinWidth(j+1)) );
+    // hMeasured->SetBinError(j+1, hMeasured->GetBinError(j+1)/(hMeasured->GetBinWidth(j+1)) );
 
-    hTrue->SetBinContent(j+1, hTrue->GetBinContent(j+1)/(hTrue->GetBinWidth(j+1)) );
-    hTrue->SetBinError(j+1, hTrue->GetBinError(j+1)/(hTrue->GetBinWidth(j+1)) );
+    // hTrue->SetBinContent(j+1, hTrue->GetBinContent(j+1)/(hTrue->GetBinWidth(j+1)) );
+    // hTrue->SetBinError(j+1, hTrue->GetBinError(j+1)/(hTrue->GetBinWidth(j+1)) );
   }
 
   cout << "==================================== UNFOLD ===================================" << endl;
@@ -195,7 +195,7 @@ void RooUnfoldPt2()
 //RooUnfoldIds     unfold (&response, hMeas, 1);
 
   TH1D* hReco= (TH1D*) unfold.Hreco();
-  TH2D* h2D = (TH2D*) response.Hresponse();
+  TH2D* h2D = (TH2D*) response.HresponseNoOverflow();
   // for(int j=0;j<hMeasured->GetNbinsX();j++){
   //   hReco->SetBinContent(j+1, hReco->GetBinContent(j+1)/(hReco->GetBinWidth(j+1)) );
   //   hReco->SetBinError(j+1, hReco->GetBinError(j+1)/(hReco->GetBinWidth(j+1)) );
