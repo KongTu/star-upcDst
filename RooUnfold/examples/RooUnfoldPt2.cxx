@@ -141,7 +141,9 @@ void RooUnfoldPt2()
 
     if(eventPass_tiny!=1) continue;
 
-    std::vector< TLorentzVector> pMC_collection, pREC_collection;
+        std::vector< double> v;
+    std::vector< TLorentzVector> pMC_collection;
+    std::vector< TLorentzVector> pREC_collection;
     TLorentzVector pMC,pREC;
     for(int imc=0;imc<mMCnOS_tiny;imc++){
       pMC.Clear();
