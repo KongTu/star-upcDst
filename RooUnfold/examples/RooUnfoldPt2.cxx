@@ -207,8 +207,8 @@ void RooUnfoldPt2()
   hReco->SetMarkerStyle(20);
   hReco->Draw("P");
   hMeasured->Draw("SAME");
-  hTrue->SetMarkerStyle(24);
-  hTrue->Draw("SAME");
+  hTrue->SetMarkerStyle(25);
+  hTrue->Draw("PSAME");
 
   TCanvas* c2 = new TCanvas("c2","c2");
   h2D->Draw("colz");
