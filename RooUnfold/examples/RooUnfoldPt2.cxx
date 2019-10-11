@@ -184,9 +184,9 @@ void RooUnfoldPt2()
   TH1D* hTrue = (TH1D*) file_test->Get("hMCDielectronPt2");
 
   cout << "==================================== UNFOLD ===================================" << endl;
-  RooUnfoldBayes   unfold (&response, hMeasured, 10);    // OR
+  // RooUnfoldBayes   unfold (&response, hMeasured, 10);    // OR
 //RooUnfoldSvd     unfold (&response, hMeas, 20);   // OR
-  // RooUnfoldTUnfold unfold (&response, hMeasured);       // OR
+  RooUnfoldTUnfold unfold (&response, hMeasured);       // OR
 //RooUnfoldIds     unfold (&response, hMeas, 1);
 
   TH1D* hReco= (TH1D*) unfold.Hreco();
