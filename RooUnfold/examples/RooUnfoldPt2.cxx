@@ -199,5 +199,5 @@ void RooUnfoldPt2()
 }
 
 #ifndef __CINT__
-int main () { RooUnfoldExample(); return 0; }  // Main program when run stand-alone
+int main () { RooUnfoldPt2(); return 0; }  // Main program when run stand-alone
 #endif
