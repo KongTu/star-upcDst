@@ -138,7 +138,8 @@ void RooUnfoldPt2()
   
   for(int i=0;i<tree->GetEntries();i++){
     tree->GetEntry(i);
-
+    if( eventPass_tiny!= 1 ) continue;
+     
     TLorentzVector pMC(0,0,0,0);
     TLorentzVector pREC(0,0,0,0);
     TLorentzVector pREC_max(0,0,0,0);
@@ -162,7 +163,7 @@ void RooUnfoldPt2()
       }
     }
 
-    if( pREC_max.Pt() != 0 && eventPass_tiny==1 ){
+    if( pREC_max.Pt() != 0 ){
       double pt2REC = pREC_max.Pt()*pREC_max.Pt();
       double pt2MC  = pMC_max.Pt()*pMC_max.Pt();
       response.Fill(pt2REC,pt2MC);
