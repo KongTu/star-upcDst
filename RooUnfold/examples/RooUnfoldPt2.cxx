@@ -166,7 +166,7 @@ void RooUnfoldPt2()
   }
 
   cout << "==================================== TEST =====================================" << endl;
-  TFile* file_test = new TFile("../../macros/upc-dst-histo-jpsi_emb_zerobias_cohNincoh.root");
+  TFile* file_test = new TFile("../macros/upc-dst-histo-jpsi_emb_zerobias_cohNincoh.root");
   TH1D* hMeasured = (TH1D*) file_test->Get("hDielectronPt2");
   TH1D* hTrue = (TH1D*) file_test->Get("hMCDielectronPt2");
   for(int j=0;j<hMeasured->GetNbinsX();j++){
