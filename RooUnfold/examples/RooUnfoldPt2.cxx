@@ -84,15 +84,9 @@ Double_t smear (Double_t xt)
 void RooUnfoldPt2()
 {
   //input
-  TFile* file = 0;
-  if(doEmb_){
-    file = new TFile("/Users/kong/google_drive/BNL_folder/Work/STAR/star-upcDst/examples/dstreader/output/output_defaultBEMC_Emb_zerobias_cohNincohVM_100k_v6_trigSimu.root");
-  }
-  else{
-    file = new TFile("/Users/kong/google_drive/BNL_folder/Work/STAR/star-upcDst/examples/dstreader/output/output_defaultBEMC_new_trigSimu.root");
-  }
-  if(!file) cout << "wrong name! Check input files" << endl;
-
+  TFile* file_emb = new TFile("../macros/upc-dst-tinyTree-emb.root");
+  TTree* tree = (TTree*) file_emb->Get("tinyTree");
+  
   Int_t mMCnOS_tiny;
   Int_t mMCnTrack_tiny;
   Double32_t mMC_px_tiny[100];
