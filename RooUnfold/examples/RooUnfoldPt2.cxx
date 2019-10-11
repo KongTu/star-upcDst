@@ -139,6 +139,7 @@ void RooUnfoldPt2()
   for(int i=0;i<tree->GetEntries();i++){
     tree->GetEntry(i);
     
+    if( eventPass_tiny != 1 ) continue;
 
     TLorentzVector pMC(0,0,0,0);
     TLorentzVector pREC(0,0,0,0);
@@ -154,17 +155,15 @@ void RooUnfoldPt2()
       }
     }
     ptmax = 0.;
-    if( eventPass_tiny == 1 ){
-      for(int irec=0;irec<mRECnOS_tiny;irec++){
-        pREC.Clear();
-        pREC.SetPxPyPzE(mREC_OS_px_tiny[irec],mREC_OS_py_tiny[irec],mREC_OS_pz_tiny[irec],mREC_OS_E_tiny[irec]);
-        if( pREC.Pt() > ptmax ) {
-          ptmax = pREC.Pt();
-          pREC_max = pREC;
-        }
+    for(int irec=0;irec<mRECnOS_tiny;irec++){
+      pREC.Clear();
+      pREC.SetPxPyPzE(mREC_OS_px_tiny[irec],mREC_OS_py_tiny[irec],mREC_OS_pz_tiny[irec],mREC_OS_E_tiny[irec]);
+      if( pREC.Pt() > ptmax ) {
+        ptmax = pREC.Pt();
+        pREC_max = pREC;
       }
     }
-
+    
     if( pREC_max.Pt() != 0 ){
       double pt2REC = pREC_max.Pt()*pREC_max.Pt();
       double pt2MC  = pMC_max.Pt()*pMC_max.Pt();
