@@ -13,6 +13,7 @@
 #include <iostream>
 using std::cout;
 using std::endl;
+using namespace std;
 
 #include "TRandom.h"
 #include "TH1D.h"
@@ -111,7 +112,7 @@ void RooUnfoldPt2()
 
     if(eventPass_tiny!=1) continue;
 
-    vector< TLorentzVector> pMC_collection, pREC_collection;
+    std::vector< TLorentzVector> pMC_collection, pREC_collection;
     TLorentzVector pMC,pREC;
     for(int imc=0;imc<mMCnOS_tiny;imc++){
       pMC.Clear();
