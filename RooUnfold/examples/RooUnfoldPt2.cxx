@@ -141,29 +141,25 @@ void RooUnfoldPt2()
 
     if(eventPass_tiny!=1) continue;
 
-        std::vector< double> v;
-    std::vector< TLorentzVector> pMC_collection;
-    std::vector< TLorentzVector> pREC_collection;
-    TLorentzVector pMC,pREC;
+    TLorentzVector pMC(0,0,0,0);
+    TLorentzVector pREC(0,0,0,0);
     for(int imc=0;imc<mMCnOS_tiny;imc++){
       pMC.Clear();
       pMC.SetPxPyPzE(mMC_px_tiny[imc],mMC_py_tiny[imc],mMC_pz_tiny[imc],mMC_E_tiny[imc]);
-      pMC_collection.push_back( pMC );
     }
     for(int irec=0;irec<mRECnOS_tiny;irec++){
       pREC.Clear();
       pREC.SetPxPyPzE(mREC_OS_px_tiny[irec],mREC_OS_py_tiny[irec],mREC_OS_pz_tiny[irec],mREC_OS_E_tiny[irec]);
-      pREC_collection.push_back( pREC );
     }
 
-    if( pREC_collection.size() != 0 ){
-      double pt2REC = pREC_collection[0].Pt()*pREC_collection[0].Pt();
-      double pt2MC  = pMC_collection[0].Pt()*pMC_collection[0].Pt();
+    if( pREC.Px() != 0 ){
+      double pt2REC = pREC.Pt()*pREC.Pt();
+      double pt2MC  = pMC.Pt()*pMC.Pt();
       response.Fill(pt2REC,pt2MC);
     }
     else{
-      if( pMC_collection.size() != 0){
-        double pt2MC  = pMC_collection[0].Pt()*pMC_collection[0].Pt();
+      if( pMC.Px() != 0){
+        double pt2MC  = pMC.Pt()*pMC.Pt();
         response.Miss(pt2MC);
       }
     }
