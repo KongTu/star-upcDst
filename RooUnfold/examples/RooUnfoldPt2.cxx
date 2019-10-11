@@ -206,10 +206,10 @@ void RooUnfoldPt2()
 
   unfold.PrintTable (cout, hTrue);
   hReco->SetMarkerStyle(20);
-  hReco->DrawNormalized("P");
-  hMeasured->DrawNormalized("SAME");
+  hReco->Draw("P");
+  hMeasured->Draw("SAME");
   hTrue->SetMarkerStyle(25);
-  hTrue->DrawNormalized("PSAME");
+  hTrue->Draw("PSAME");
 
   TCanvas* c2 = new TCanvas("c2","c2");
   h2D->Draw("colz");
