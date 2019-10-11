@@ -17,6 +17,8 @@ using std::endl;
 #include "TRandom.h"
 #include "TH1D.h"
 #include "TCanvas.h"
+#include <vector>
+#include "TLorentzVector.h"
 
 #include "RooUnfoldResponse.h"
 #include "RooUnfoldBayes.h"
