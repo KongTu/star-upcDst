@@ -139,7 +139,7 @@ void RooUnfoldPt2()
   for(int i=0;i<tree->GetEntries();i++){
     tree->GetEntry(i);
     if( eventPass_tiny!= 1 ) continue;
-     
+
     TLorentzVector pMC(0,0,0,0);
     TLorentzVector pREC(0,0,0,0);
     TLorentzVector pREC_max(0,0,0,0);
@@ -195,6 +195,7 @@ void RooUnfoldPt2()
 //RooUnfoldIds     unfold (&response, hMeas, 1);
 
   TH1D* hReco= (TH1D*) unfold.Hreco();
+  TH2D* h2D = (TH2D*) unfold.Hresponse();
   // for(int j=0;j<hMeasured->GetNbinsX();j++){
   //   hReco->SetBinContent(j+1, hReco->GetBinContent(j+1)/(hReco->GetBinWidth(j+1)) );
   //   hReco->SetBinError(j+1, hReco->GetBinError(j+1)/(hReco->GetBinWidth(j+1)) );
@@ -208,6 +209,9 @@ void RooUnfoldPt2()
   hMeasured->Draw("SAME");
   hTrue->SetMarkerStyle(24);
   hTrue->Draw("SAME");
+
+  TCanvas* c2 = new TCanvas("c2","c2");
+  h2D->Draw("colz");
 
   // c1->SaveAs("RooUnfoldExample.pdf");
 
