@@ -178,8 +178,9 @@ void RooUnfoldPt2()
   }
 
   cout << "==================================== TEST =====================================" << endl;
-  TFile* file_test = new TFile("../macros/upc-dst-histo-jpsi_emb_zerobias_cohNincoh.root");
-  TH1D* hMeasured = (TH1D*) file_test->Get("hDielectronPt2");
+  TFile* file_test = new TFile("../macros/upc-dst-histo-jpsi-simple_emb_zerobias_cohNincoh.root");
+  TH2D* hJpsiMass_Pt2 = (TH2D*) file_test->Get("hJpsiMass_Pt2");
+  TH1D* hMeasured = (TH1D*) hJpsiMass_Pt2->ProjectionY("hMeasured",1,100);
   TH1D* hTrue = (TH1D*) file_test->Get("hMCDielectronPt2");
   for(int j=0;j<hMeasured->GetNbinsX();j++){
     // hMeasured->SetBinContent(j+1, hMeasured->GetBinContent(j+1)/(hMeasured->GetBinWidth(j+1)) );
