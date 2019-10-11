@@ -83,8 +83,15 @@ Double_t smear (Double_t xt)
 
 void RooUnfoldPt2()
 {
-  TFile* file_emb = new TFile("../macros/upc-dst-tinyTree-emb.root");
-  TTree* tree = (TTree*) file_emb->Get("tinyTree");
+  //input
+  TFile* file = 0;
+  if(doEmb_){
+    file = new TFile("/Users/kong/google_drive/BNL_folder/Work/STAR/star-upcDst/examples/dstreader/output/output_defaultBEMC_Emb_zerobias_cohNincohVM_100k_v6_trigSimu.root");
+  }
+  else{
+    file = new TFile("/Users/kong/google_drive/BNL_folder/Work/STAR/star-upcDst/examples/dstreader/output/output_defaultBEMC_new_trigSimu.root");
+  }
+  if(!file) cout << "wrong name! Check input files" << endl;
 
   Int_t mMCnOS_tiny;
   Int_t mMCnTrack_tiny;
@@ -135,31 +142,39 @@ void RooUnfoldPt2()
 
   RooUnfoldResponse response (hMeasu, hTruth);
   
-  
   for(int i=0;i<tree->GetEntries();i++){
     tree->GetEntry(i);
 
-    if(eventPass_tiny!=1) continue;
-
     TLorentzVector pMC(0,0,0,0);
     TLorentzVector pREC(0,0,0,0);
+    TLorentzVector pREC_max(0,0,0,0);
+    TLorentzVector pMC_max(0,0,0,0);
+    double ptmax = 0;
     for(int imc=0;imc<mMCnOS_tiny;imc++){
       pMC.Clear();
       pMC.SetPxPyPzE(mMC_px_tiny[imc],mMC_py_tiny[imc],mMC_pz_tiny[imc],mMC_E_tiny[imc]);
+      if( pMC.Pt() > ptmax ) {
+        ptmax = pMC.Pt();
+        pMC_max = pMC;
+      }
     }
     for(int irec=0;irec<mRECnOS_tiny;irec++){
       pREC.Clear();
       pREC.SetPxPyPzE(mREC_OS_px_tiny[irec],mREC_OS_py_tiny[irec],mREC_OS_pz_tiny[irec],mREC_OS_E_tiny[irec]);
+      if( pREC.Pt() > ptmax ) {
+        ptmax = pREC.Pt();
+        pREC_max = pREC;
+      }
     }
 
-    if( pREC.Px() != 0 ){
-      double pt2REC = pREC.Pt()*pREC.Pt();
-      double pt2MC  = pMC.Pt()*pMC.Pt();
+    if( pREC_max.Pt() != 0 && eventPass_tiny==1 ){
+      double pt2REC = pREC_max.Pt()*pREC_max.Pt();
+      double pt2MC  = pMC_max.Pt()*pMC_max.Pt();
       response.Fill(pt2REC,pt2MC);
     }
     else{
-      if( pMC.Px() != 0){
-        double pt2MC  = pMC.Pt()*pMC.Pt();
+      if( pMC_max.Pt() != 0){
+        double pt2MC  = pMC_max.Pt()*pMC_max.Pt();
         response.Miss(pt2MC);
       }
     }
@@ -178,7 +193,7 @@ void RooUnfoldPt2()
   }
 
   cout << "==================================== UNFOLD ===================================" << endl;
-  RooUnfoldBayes   unfold (&response, hMeasured, 20);    // OR
+  RooUnfoldBayes   unfold (&response, hMeasured, 10);    // OR
 //RooUnfoldSvd     unfold (&response, hMeas, 20);   // OR
 //RooUnfoldTUnfold unfold (&response, hMeas);       // OR
 //RooUnfoldIds     unfold (&response, hMeas, 1);
