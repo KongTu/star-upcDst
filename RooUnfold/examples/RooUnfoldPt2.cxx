@@ -86,7 +86,7 @@ void RooUnfoldPt2()
   //input
   TFile* file_emb = new TFile("../macros/upc-dst-tinyTree-emb.root");
   TTree* tree = (TTree*) file_emb->Get("tinyTree");
-  
+
   Int_t mMCnOS_tiny;
   Int_t mMCnTrack_tiny;
   Double32_t mMC_px_tiny[100];
@@ -143,7 +143,7 @@ void RooUnfoldPt2()
     TLorentzVector pREC(0,0,0,0);
     TLorentzVector pREC_max(0,0,0,0);
     TLorentzVector pMC_max(0,0,0,0);
-    double ptmax = 0;
+    double ptmax = 0.;
     for(int imc=0;imc<mMCnOS_tiny;imc++){
       pMC.Clear();
       pMC.SetPxPyPzE(mMC_px_tiny[imc],mMC_py_tiny[imc],mMC_pz_tiny[imc],mMC_E_tiny[imc]);
@@ -152,6 +152,7 @@ void RooUnfoldPt2()
         pMC_max = pMC;
       }
     }
+    ptmax = 0.;
     for(int irec=0;irec<mRECnOS_tiny;irec++){
       pREC.Clear();
       pREC.SetPxPyPzE(mREC_OS_px_tiny[irec],mREC_OS_py_tiny[irec],mREC_OS_pz_tiny[irec],mREC_OS_E_tiny[irec]);
