@@ -59,8 +59,9 @@ void RunFilterMaker(string filelist, Int_t nFiles, string outfile, string config
   strig->useOfflineDB();
   strig->setMC(0);//will be overwiritten according to isMC later
   strig->useBemc();
-  strig->useEemc(0);
-  strig->bemc->setConfig(1);
+  strig->useEemc();
+  strig->bemc->setConfig(StBemcTriggerSimu::kOnline);
+  strig->bemc->mTestMode = true;
 
   //analysis maker
   anaMaker = new StUPCFilterMaker(maker, strig, outfile); //maker for muDst passed to the constructor
