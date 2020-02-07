@@ -72,7 +72,14 @@ EEfeeTPTree::compute(int *rawAdc, int *feePed, int *feeMask, int* highTowerMask,
     feeTP[i]->compute(rawAdc+off, feePed+off, feeMask+off, highTowerMask[i], patchSumMask[i]);
   }  
 }
-
+void
+EEfeeTPTree::test(int *tp, int *ht)
+{
+  int i;
+  for(i=0;i<mxTP;i++) {
+    feeTP[i]->test(tp[i], ht[i]);
+  }  
+}
 #if 0
 //--------------------------------------------------
 //--------------------------------------------------

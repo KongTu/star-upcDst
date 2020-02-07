@@ -18,13 +18,13 @@ void read_trigger_thresholds(int runNumber=13078009)
   gSystem->Load("St_db_Maker");
 
   gSystem->Load("StEmcRawMaker");
-  gSystem->Load("StEmcAdctoEMaker");
+  gSystem->Load("StEmcADCtoEMaker");
   gSystem->Load("StEEmcUtil");
   gSystem->Load("StEEmcDbMaker");
   gSystem->Load("StTriggerUtilities");
 
 
-  ifstream in(Form("beginTimes/%d.beginTimes.offsets.txt", runNumber));
+  ifstream in(Form("beginTimes/%d.beginTimes.txt", runNumber));
   if(!in) {
     cout<<"can't open input file\n";
     return 0;

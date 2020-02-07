@@ -128,7 +128,7 @@ public:
 
 
   //virtual const char *GetCVS() const
-  //{static const char cvs[]="Tag $Name: SL17f $ $Id: StTriggerSimuMaker.h,v 1.34 2017/01/02 15:31:39 rfatemi Exp $ built "__DATE__" "__TIME__ ; return cvs;}
+  //{static const char cvs[]="Tag $Name:  $ $Id: StTriggerSimuMaker.h,v 1.34 2017/01/02 15:31:39 rfatemi Exp $ built "__DATE__" "__TIME__ ; return cvs;}
 
   ClassDef(StTriggerSimuMaker,0)
 };

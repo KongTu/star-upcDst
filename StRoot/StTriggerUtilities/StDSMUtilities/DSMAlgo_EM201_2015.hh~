@@ -1,0 +1,13 @@
+#ifndef DSM_ALGO_EM201_2015_HH
+#define DSM_ALGO_EM201_2015_HH
+
+#include "DSMAlgo.hh"
+
+struct DSMAlgo_EM201_2015 : public DSMAlgo {
+  int ajpBarrel(const DSM& dsm, int offset) const;
+  int ajpEndcap(const DSM& dsm) const;
+
+  void operator()(DSM& dsm);
+};
+
+#endif	// DSM_ALGO_EM201_2015_HH

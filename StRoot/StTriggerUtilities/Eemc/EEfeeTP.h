@@ -39,7 +39,8 @@ public:
   int   getOutTPsum() const {return TPsum6b;} 
   int   getOutHT() const {return HT6b;}
   int   getOut12bit() const { return (getOutTPsum()<<6) + getOutHT();}
-  
+  //zchang
+  void test(int tp, int ht) { TPsum6b = tp; HT6b = ht; }  
 }; 
 #endif
 

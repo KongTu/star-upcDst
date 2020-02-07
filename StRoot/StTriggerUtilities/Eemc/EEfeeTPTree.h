@@ -29,7 +29,7 @@ class EEfeeTPTree  {  // DSM0 tree emulators
   void  compute(int *rawAdc, int *feePed, int *feeMask, int* highTowerMask, int* patchSumMask);
   EEfeeTP * TP(int i) { return feeTP[i]; }
   const EEfeeTP * TP(int i) const { return feeTP[i]; }
-  
+  void test(int *tp, int *ht);  
 };
 
 #endif
