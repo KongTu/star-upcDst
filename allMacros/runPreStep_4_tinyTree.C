@@ -18,7 +18,7 @@ struct MyEvent {
 	Double32_t mMC_E_tiny[nMCtrack_MAX];
 
 	enum {
-	nRECtrack_MAX=100
+	nRECtrack_MAX=1000
 	};
 	Int_t eventPass_tiny;
 	Int_t mRECnTracks_tiny;
@@ -29,6 +29,7 @@ struct MyEvent {
 	Double32_t mREC_SS_py_tiny[nRECtrack_MAX];
 	Double32_t mREC_SS_pz_tiny[nRECtrack_MAX];
 	Double32_t mREC_SS_E_tiny[nRECtrack_MAX];
+
 	Double32_t mREC_OS_px_tiny[nRECtrack_MAX];
 	Double32_t mREC_OS_py_tiny[nRECtrack_MAX];
 	Double32_t mREC_OS_pz_tiny[nRECtrack_MAX];
@@ -46,9 +47,11 @@ void runPreStep_4_tinyTree( const bool doEmb_ = false ){
 	TString outfile_name = "output-PreStep_4-data.root";
 	if(doEmb_) outfile_name = "output-PreStep_4-embedding.root";
 
+	//reweighting
 	TFile * file_vtx = new TFile("reweight_vertex.root");
 	TH1D* hVtxZ_data = (TH1D*) file_vtx->Get("hVtxZCut");
-
+	TH1D* hPt2_data = (TH1D*) file_vtx->Get("hTotal");
+	
 	TFile *  file_nsigma = new TFile("/Users/kong/google_drive/BNL_folder/Work/STAR/dileptonAnalyzer/macros/dAu200_hadronic.root");
 	TH2D* hNSigmaEPion_pt[5];
 	for(int j=0;j<5;j++){
@@ -71,6 +74,7 @@ void runPreStep_4_tinyTree( const bool doEmb_ = false ){
 	tinyTree->Branch("mRECnSS_tiny",&myEvent.mRECnSS_tiny,"mRECnSS_tiny/I");
 	tinyTree->Branch("mRECnOS_tiny",&myEvent.mRECnOS_tiny,"mRECnOS_tiny/I");
 	tinyTree->Branch("weight_evt",&myEvent.weight_evt,"weight_evt/D");
+
 	tinyTree->Branch("mREC_SS_px_tiny",myEvent.mREC_SS_px_tiny,"mREC_SS_px_tiny[mRECnSS_tiny]/D");
 	tinyTree->Branch("mREC_SS_py_tiny",myEvent.mREC_SS_py_tiny,"mREC_SS_py_tiny[mRECnSS_tiny]/D");
 	tinyTree->Branch("mREC_SS_pz_tiny",myEvent.mREC_SS_pz_tiny,"mREC_SS_pz_tiny[mRECnSS_tiny]/D");
@@ -82,6 +86,7 @@ void runPreStep_4_tinyTree( const bool doEmb_ = false ){
 
 	TTree* tree = (TTree*) file->Get("myTree");
 	Bool_t isTrigger_mini[4];
+	Bool_t isSimuTrigger_mini[4];
 	Int_t mNumberOfTracks_mini;
 	Int_t mNvertex_mini;
 	Float_t mPosZ_mini[30];
@@ -118,6 +123,7 @@ void runPreStep_4_tinyTree( const bool doEmb_ = false ){
   	Int_t mMC_pdg_mini[MAXTracks];
 
 	tree->SetBranchAddress("isTrigger_mini",&isTrigger_mini);
+	tree->SetBranchAddress("isSimuTrigger_mini",&isSimuTrigger_mini);
 	tree->SetBranchAddress("mNumberOfTracks_mini",&mNumberOfTracks_mini);
 	tree->SetBranchAddress("mNvertex_mini",&mNvertex_mini);
 	tree->SetBranchAddress("mNPrimaryTracks_mini",&mNPrimaryTracks_mini);
@@ -159,24 +165,68 @@ void runPreStep_4_tinyTree( const bool doEmb_ = false ){
 	for(int ievt=0; ievt<tree->GetEntries(); ievt++){
 
 		tree->GetEntry(ievt);
+
+		//do embedding MC particle loop, fill the MC part
+		vector< TLorentzVector> e_MC_plus, e_MC_minus;
+		int nOS_MC = 0;
+		int Nparticles_MC = 0;
+		myEvent.mMC_px_tiny[nOS_MC] = -999.;
+		myEvent.mMC_py_tiny[nOS_MC] = -999.;
+		myEvent.mMC_pz_tiny[nOS_MC] = -999.;
+		myEvent.mMC_E_tiny[nOS_MC] = -999.;
+		double weight_pt2 = 1.;
+
+		if(doEmb_){
+			e_MC_plus.clear();e_MC_minus.clear();
+			for(int imc = 0; imc < mMCnTracks_mini; imc++){
+				TLorentzVector eMCParticle(mMC_px_mini[imc], mMC_py_mini[imc],mMC_pz_mini[imc],mMC_E_mini[imc]);
+				Nparticles_MC++;
+				if( mMC_pdg_mini[imc] == -11 ) e_MC_plus.push_back( eMCParticle );
+				if( mMC_pdg_mini[imc] == +11 ) e_MC_minus.push_back( eMCParticle );
+				if( fabs(mMC_pdg_mini[imc]) != 11 ) continue;
+				if( imc >= 2 ) continue;
+			}
+			if(e_MC_plus.size() >= 1 && e_MC_minus.size() >= 1 ) {
+				for( unsigned i = 0; i < e_MC_plus.size(); i++){
+					for( unsigned j = 0; j < e_MC_minus.size(); j++){
+						TLorentzVector e_inv_MC = e_MC_plus[i] + e_MC_minus[j];
+
+						if( TMath::Abs(e_inv_MC.Rapidity()) > 1.0 ) continue;
+						if( e_inv_MC.Pt() < 0. ) continue;
+						if( e_inv_MC.M() < 3.0 ) continue;
+
+						myEvent.mMC_px_tiny[nOS_MC] = e_inv_MC.Px();
+						myEvent.mMC_py_tiny[nOS_MC] = e_inv_MC.Py();
+						myEvent.mMC_pz_tiny[nOS_MC] = e_inv_MC.Pz();
+						myEvent.mMC_E_tiny[nOS_MC] = e_inv_MC.E();
+						nOS_MC++;
+						// weight_pt2 = hPt2_data->GetBinContent( hPt2_data->FindBin(e_inv_MC.Pt()*e_inv_MC.Pt()) );
+					}
+				}
+			}
+		}
+		myEvent.mMCnTrack_tiny = Nparticles_MC;
+		myEvent.mMCnOS_tiny = nOS_MC;
+		double weight = 1.0;
+		myEvent.weight_evt = weight*weight_pt2; //for now weights are 1, there is no MC vertex 
+		int pass = 1;
+		//trigger selections:
+		if(!doEmb_) if( isTrigger_mini[2] != 1 ) pass = 0;
+		if( doEmb_ ) if( isSimuTrigger_mini[2] != 1 ) pass = 0;
+		if( mNvertex_mini <= 0 ) pass = 0;
 		
 		for(int ivtx = 0; ivtx < mNvertex_mini; ivtx++){
 
-			myEvent.eventPass_tiny = 1;
-
-			//vertex selections:
-			if(!doEmb_) if( isTrigger_mini[2] != 1 ) myEvent.eventPass_tiny = 0;
-			if(TMath::Abs(mPosX_mini[ivtx])<1.e-5 && TMath::Abs(mPosY_mini[ivtx])<1.e-5 && TMath::Abs(mPosZ_mini[ivtx])<1.e-5) myEvent.eventPass_tiny = 0;
-			if(fabs(mPosZ_mini[ivtx]) > 100. ) myEvent.eventPass_tiny = 0; //loop over vertex and cut on Z vertex
+			if(TMath::Abs(mPosX_mini[ivtx])<1.e-5 && TMath::Abs(mPosY_mini[ivtx])<1.e-5 && TMath::Abs(mPosZ_mini[ivtx])<1.e-5) pass = 0;
+			if(fabs(mPosZ_mini[ivtx]) > 100. ) pass = 0; //loop over vertex and cut on Z vertex
 
 			//event selections: at least two valid tracks that match BEMC and > 0.5 Gev in pT.
 			int Nparticles = 0;
 			for(int itrk = 0; itrk < mNumberOfTracks_mini; itrk++){
 
 				if( (int) mVtxId_mini[itrk] != ivtx ) continue;
-
-				if( mNhitsDEdx_mini[itrk] < 10 ) continue;
-				if( mNhitsFit_mini[itrk] < 13 ) continue;
+				if( mNhitsDEdx_mini[itrk] < 15 ) continue;
+				if( mNhitsFit_mini[itrk] < 25 ) continue;
 				if( fabs(mEta_mini[itrk]) > 1.0 ) continue;
 				if( fabs(mDcaXY_mini[itrk]) > 3.0 ) continue;
 				if( fabs(mDcaZ_mini[itrk]) > 3.0 ) continue;
@@ -185,58 +235,9 @@ void runPreStep_4_tinyTree( const bool doEmb_ = false ){
 				
 				Nparticles++;
 			}
-			if( Nparticles < 2 ) myEvent.eventPass_tiny = 0; //event selection end.
-			
-			//vertex weight
-			double weight = 1.0;
-			if( doEmb_ && myEvent.eventPass_tiny == 1 ){
-				weight = hVtxZ_data->GetBinContent(hVtxZ_data->FindBin(mPosZ_mini[ivtx])); 
-			}
-			myEvent.weight_evt = weight;
-
-			//do embedding MC particle loop, fill the MC part
-			vector< TLorentzVector> e_MC_plus, e_MC_minus;
-			myEvent.mMCnTrack_tiny = -1;
-			myEvent.mMCnOS_tiny = -1;
-			int nOS_MC = 0;
-			int Nparticles_MC = 0;
-			myEvent.mMC_px_tiny[nOS_MC] = -999.;
-			myEvent.mMC_py_tiny[nOS_MC] = -999.;
-			myEvent.mMC_pz_tiny[nOS_MC] = -999.;
-			myEvent.mMC_E_tiny[nOS_MC] = -999.;
-
-			if(doEmb_){
-				e_MC_plus.clear();e_MC_minus.clear();
-				for(int imc = 0; imc < mMCnTracks_mini; imc++){
-					TLorentzVector eMCParticle(mMC_px_mini[imc], mMC_py_mini[imc],mMC_pz_mini[imc],mMC_E_mini[imc]);
-					if( fabs(eMCParticle.Eta()) > 1.0 ) continue;
-					// if( eMCParticle.Pt() < 0.5 ) continue;
-					Nparticles_MC++;
-
-					if( mMC_pdg_mini[imc] == -11 ) e_MC_plus.push_back( eMCParticle );
-					if( mMC_pdg_mini[imc] == +11 ) e_MC_minus.push_back( eMCParticle );
-				}
-				if(e_MC_plus.size() < 1 || e_MC_minus.size() < 1 ) continue;
-					for( unsigned i = 0; i < e_MC_plus.size(); i++){
-						for( unsigned j = 0; j < e_MC_minus.size(); j++){
-							TLorentzVector e_inv_MC = e_MC_plus[i] + e_MC_minus[j];
-							if( TMath::Abs(e_inv_MC.Rapidity()) > 1.0 ) continue;
-							if( e_inv_MC.Pt() < 0. ) continue;
-							if( e_inv_MC.M() < 3.0 ) continue;
-
-							myEvent.mMC_px_tiny[nOS_MC] = e_inv_MC.Px();
-							myEvent.mMC_py_tiny[nOS_MC] = e_inv_MC.Py();
-							myEvent.mMC_pz_tiny[nOS_MC] = e_inv_MC.Pz();
-							myEvent.mMC_E_tiny[nOS_MC] = e_inv_MC.E();
-							nOS_MC++;
-
-						}
-					}
-			}
-			myEvent.mMCnTrack_tiny = Nparticles_MC;
-			myEvent.mMCnOS_tiny = nOS_MC;
+			if( Nparticles < 2 ) pass = 0; //event selection end.
 			myEvent.mRECnTracks_tiny = Nparticles;
-
+			
 			TLorentzVector e1,e2;
 			mNSigmaE1.clear();
 			mNSigmaE2.clear();
@@ -245,39 +246,69 @@ void runPreStep_4_tinyTree( const bool doEmb_ = false ){
 			e_plus.clear();
 			e_minus.clear();
 
+			double deltaR_minPlus = 999.;
+			double deltaR_minMinus = 999.;
+			int bestIndex = -1;
+			TVector3 bestMatchEplus(0,0,0);
+			TVector3 bestMatchEminus(0,0,0);
 			for(int itrk = 0; itrk < mNumberOfTracks_mini; itrk++){
 
 				if( (int) mVtxId_mini[itrk] != ivtx ) continue;
-				if( mNhitsDEdx_mini[itrk] < 10 ) continue;
-				if( mNhitsFit_mini[itrk] < 13 ) continue;
+				if( mNhitsDEdx_mini[itrk] < 15 ) continue;
+				if( mNhitsFit_mini[itrk] < 25 ) continue;
 				if( fabs(mEta_mini[itrk]) > 1.0 ) continue;
 				if( fabs(mDcaXY_mini[itrk]) > 3.0 ) continue;
 				if( fabs(mDcaZ_mini[itrk]) > 3.0 ) continue;
 				if( !mFlagBemc_mini[itrk] ) continue;
 
+				//Recalculate the nsigma electron and pion in embedding
 				if( doEmb_ ){
 					//already studied numbers:
 					double a = smearing_a_para;
 					double b = smearing_b_para;
 					double pt_indep_sigma = pt_indep_const_sigma;
+					//select matching tracks
+					TVector3 part3;
+					part3.SetPtEtaPhi(mPt_mini[itrk],mEta_mini[itrk],mPhi_mini[itrk]);
+					TLorentzVector eMCParticle_plus = e_MC_plus[0];
+					TLorentzVector eMCParticle_minus = e_MC_minus[0];
 					if( mCharge_mini[itrk] == +1 ){
-						double pt_smearing = (mPt_mini[itrk] - e_MC_plus[0].Pt())/e_MC_plus[0].Pt();
-						double Nsigma = pt_smearing/pt_indep_sigma;
-						double sigma_new = sqrt( (a*e_MC_plus[0].Pt())*(a*e_MC_plus[0].Pt()) + b*b);
-						mPt_mini[itrk] = e_MC_plus[0].Pt()*(sigma_new*Nsigma+1);
+						if( eMCParticle_plus.Pt() < 1.0 ) pt_indep_sigma = pt_indep_const_sigma;
+						if( eMCParticle_plus.Pt() > 1.0 && eMCParticle_plus.Pt() < 2.0 ) pt_indep_sigma = pt_indep_const_sigma;
+						if( isMatch(part3,eMCParticle_plus) ){
+							TVector3 partmc3 = eMCParticle_plus.Vect();
+							if( part3.DeltaR(partmc3) < deltaR_minPlus ) {
+								deltaR_minPlus=part3.DeltaR(partmc3);
+								bestMatchEplus = part3;
 
+								double pt_smearing = (mPt_mini[itrk] - e_MC_plus[0].Pt())/e_MC_plus[0].Pt();
+								double Nsigma = pt_smearing/pt_indep_sigma;
+								double sigma_new = sqrt( (a*e_MC_plus[0].Pt())*(a*e_MC_plus[0].Pt()) + b*b);
+								mPt_mini[itrk] = e_MC_plus[0].Pt()*(sigma_new*Nsigma+1);
+								if( mPt_mini[itrk] < 0.5 ) bestMatchEplus.SetPtEtaPhi(0,0,0);
+								else bestMatchEplus.SetPtEtaPhi(mPt_mini[itrk],part3.Eta(),part3.Phi() );
+							}
+						}
 					}
 					if( mCharge_mini[itrk] == -1 ){
-						double pt_smearing = (mPt_mini[itrk] - e_MC_minus[0].Pt())/e_MC_minus[0].Pt();
-						double Nsigma = pt_smearing/pt_indep_sigma;
-						double sigma_new = sqrt( (a*e_MC_minus[0].Pt())*(a*e_MC_minus[0].Pt()) + b*b);
-						mPt_mini[itrk] = e_MC_minus[0].Pt()*(sigma_new*Nsigma+1);
+						if( eMCParticle_minus.Pt() < 1.0 ) pt_indep_sigma = pt_indep_const_sigma;
+						if( eMCParticle_minus.Pt() > 1.0 && eMCParticle_plus.Pt() < 2.0 ) pt_indep_sigma = pt_indep_const_sigma;
+						if( isMatch(part3,eMCParticle_minus) ){
+							TVector3 partmc3 = eMCParticle_minus.Vect();
+							if( part3.DeltaR(partmc3) < deltaR_minMinus ) {
+								deltaR_minMinus=part3.DeltaR(partmc3);
+								bestMatchEminus = part3;
+
+								double pt_smearing = (mPt_mini[itrk] - e_MC_minus[0].Pt())/e_MC_minus[0].Pt();
+								double Nsigma = pt_smearing/pt_indep_sigma;
+								double sigma_new = sqrt( (a*e_MC_minus[0].Pt())*(a*e_MC_minus[0].Pt()) + b*b);
+								mPt_mini[itrk] = e_MC_minus[0].Pt()*(sigma_new*Nsigma+1);
+								if( mPt_mini[itrk] < 0.5 ) bestMatchEminus.SetPtEtaPhi(0,0,0);
+								else bestMatchEminus.SetPtEtaPhi(mPt_mini[itrk],part3.Eta(),part3.Phi() );
+							}
+						}
 					}
-				}
-				
-				if( mPt_mini[itrk] < 0.5 ) continue;
-				//Recalculate the nsigma electron and pion in embedding
-				if( doEmb_ ){
+
 					for(int j=0;j<5;j++){
 						if(mPt_mini[itrk] > ptbins_nsigma[j] && mPt_mini[itrk] < ptbins_nsigma[j+1]){
 							double nsigma_e_data=0.;
@@ -288,6 +319,8 @@ void runPreStep_4_tinyTree( const bool doEmb_ = false ){
 						}
 					}
 				}
+		
+				if( mPt_mini[itrk] < 0.5 ) continue;
 
 				if( mCharge_mini[itrk] == +1 ){
 					e1.SetPtEtaPhiM(mPt_mini[itrk],mEta_mini[itrk],mPhi_mini[itrk],MASS_ELECTRON);
@@ -353,43 +386,52 @@ void runPreStep_4_tinyTree( const bool doEmb_ = false ){
 
 			myEvent.mRECnSS_tiny = nSS;
 
+			if( bestMatchEplus.Pt() == 0 || bestMatchEminus.Pt() == 0 ) pass = 0;
 			//unlike sign case
 			int nOS = 0;
-			if( e_plus.size() >= 1 && e_minus.size() >= 1 ){
-				//unlike-sign pair loop
-				for( unsigned itrk = 0; itrk < e_plus.size(); itrk++ ){
-					for( unsigned jtrk = 0; jtrk < e_minus.size(); jtrk++ ){
+			if( pass == 1 ){
+			e_plus.clear();
+			e_minus.clear();
+			TLorentzVector bestMatchEplus4vect,bestMatchEminus4vect;
+			bestMatchEplus4vect.SetPtEtaPhiM(bestMatchEplus.Pt(),bestMatchEplus.Eta(),bestMatchEplus.Phi(), MASS_ELECTRON);
+			bestMatchEminus4vect.SetPtEtaPhiM(bestMatchEminus.Pt(),bestMatchEminus.Eta(),bestMatchEminus.Phi(), MASS_ELECTRON);
+			e_plus.push_back( bestMatchEplus4vect );
+			e_minus.push_back( bestMatchEminus4vect );	
+				if( e_plus.size() >= 1 && e_minus.size() >= 1 ){
+					//unlike-sign pair loop
+					for( unsigned itrk = 0; itrk < e_plus.size(); itrk++ ){
+						for( unsigned jtrk = 0; jtrk < e_minus.size(); jtrk++ ){
 
-						double chi2_e = mNSigmaE1[itrk]*mNSigmaE1[itrk] + mNSigmaE2[jtrk]*mNSigmaE2[jtrk];
-						double chi2_p = mNSigmaPi1[itrk]*mNSigmaPi1[itrk] + mNSigmaPi2[jtrk]*mNSigmaPi2[jtrk];
-						//embedding has correct nsigma e and pi
-						if( chi2_p<elecPIDcut_b && (chi2_e/chi2_p) > elecPIDcut_a/elecPIDcut_b ) continue;
-						if( chi2_p>elecPIDcut_b && chi2_e > elecPIDcut_a ) continue;
-						
-						TLorentzVector e_inv;
-						e_inv = e_plus[itrk]+e_minus[jtrk];
-						if( fabs(e_inv.Rapidity()) > 1.0 ) continue;
-						if( e_inv.Pt() < 0.0 ) continue;
-						myEvent.mREC_OS_px_tiny[nOS] = e_inv.Px();
-						myEvent.mREC_OS_py_tiny[nOS] = e_inv.Py();
-						myEvent.mREC_OS_pz_tiny[nOS] = e_inv.Pz();
-						myEvent.mREC_OS_E_tiny[nOS] = e_inv.E();
-						nOS++;
+							double chi2_e = mNSigmaE1[itrk]*mNSigmaE1[itrk] + mNSigmaE2[jtrk]*mNSigmaE2[jtrk];
+							double chi2_p = mNSigmaPi1[itrk]*mNSigmaPi1[itrk] + mNSigmaPi2[jtrk]*mNSigmaPi2[jtrk];
+							//embedding has correct nsigma e and pi
+							if( chi2_p<elecPIDcut_b && (chi2_e/chi2_p) > elecPIDcut_a/elecPIDcut_b ) continue;
+							if( chi2_p>elecPIDcut_b && chi2_e > elecPIDcut_a ) continue;
+							
+							TLorentzVector e_inv;
+							e_inv = e_plus[itrk]+e_minus[jtrk];
+							if( fabs(e_inv.Rapidity()) > 1.0 ) continue;
+							if( e_inv.Pt() < 0.0 ) continue;
+							myEvent.mREC_OS_px_tiny[nOS] = e_inv.Px();
+							myEvent.mREC_OS_py_tiny[nOS] = e_inv.Py();
+							myEvent.mREC_OS_pz_tiny[nOS] = e_inv.Pz();
+							myEvent.mREC_OS_E_tiny[nOS] = e_inv.E();
+							nOS++;
+
+
+						}
 					}
 				}
 			}
 			myEvent.mRECnOS_tiny = nOS;
-			
-			tinyTree->Fill();
-
 		}
+		
+		myEvent.eventPass_tiny = pass;
+
+		tinyTree->Fill();
 	}
 
-	
-	
    	tinyTree->Write();
-
-
 
 
 }

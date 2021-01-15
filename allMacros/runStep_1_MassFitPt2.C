@@ -43,111 +43,50 @@ void runStep_1_MassFitPt2(const bool doSys_ = false, const bool draw_ = true){
 
 	TFile* file_data = new TFile("output-PreStep_2-data.root");
 	TH2D* hJpsiMass_Pt2 = (TH2D*) file_data->Get("hJpsiMass_Pt2");
+	TH2D* hJpsiMassZDC_Pt2 = (TH2D*) file_data->Get("hJpsiMassZDC_Pt2");
 	TH2D* hLikeSignMass_Pt2 = (TH2D*) file_data->Get("hLikeSignMass_Pt2");
 	TH1D* hJpsiMass = (TH1D*) file_data->Get("hJpsiMass");
+	TH1D* hJpsiMassZDC = (TH1D*) file_data->Get("hJpsiMassZDC");
 	TH1D* hLikeSignMass = (TH1D*) file_data->Get("hLikeSignMass");
-
+	
+	
 	//LOAD Jpsi embedding best template
 	TFile* file_mc = new TFile("output-PreStep_1.root");
 	//Chi2/ndf ~ 1.1, best fit
 	//a = 0.002+86*0.0001 = 0.0106
 	//b = 0.008
 	//systematic varations 70, 100 as opposed to 86
-	TString name_of_template = "79";
+	TString name_of_template = "40";
 	TH1D* hJpsiMass_mc = (TH1D*) file_mc->Get("hJpsiMass_"+name_of_template+"_0");
 
 	TCanvas* c2 = new TCanvas("c2","c2",800,800);
 	c2->Divide(3,3,0.01,0.01);
+	TCanvas* c3 = new TCanvas("c3","c3",800,800);
+	c3->Divide(3,3,0.01,0.01);
+
 	int Nbins = hJpsiMass_Pt2->GetNbinsY();
 	TH1D* hJpsiMass_Pt2_1D[Nbins+1];
+	TH1D* hJpsiMassZDC_Pt2_1D[Nbins+1];
 	TH1D* hLikeSignMass_Pt2_1D[Nbins+1];
 	for(int i = 0; i < Nbins; i++){
 		hJpsiMass_Pt2_1D[i] = (TH1D*) hJpsiMass_Pt2->ProjectionX(Form("mass_%d",i),i+1,i+1);
+		hJpsiMassZDC_Pt2_1D[i] = (TH1D*) hJpsiMassZDC_Pt2->ProjectionX(Form("zdcmass_%d",i),i+1,i+1);
 		hLikeSignMass_Pt2_1D[i] = (TH1D*) hLikeSignMass_Pt2->ProjectionX(Form("likeSignMass_%d",i),i+1,i+1);
 	}
 	hJpsiMass_Pt2_1D[Nbins] = (TH1D*) hJpsiMass_Pt2->ProjectionX(Form("mass_%d",Nbins),1,Nbins);
+	hJpsiMassZDC_Pt2_1D[Nbins] = (TH1D*) hJpsiMassZDC_Pt2->ProjectionX(Form("zdcmass_%d",Nbins),1,Nbins);
 	hLikeSignMass_Pt2_1D[Nbins] = (TH1D*) hLikeSignMass_Pt2->ProjectionX(Form("likeSignMass_%d",Nbins),1,Nbins);
 
-	TF1* func[Nbins+1];
-	TF1* fitJSignal[Nbins+1];
-	TF1* fitJBkg[Nbins+1];
+	TF1* func[Nbins+1]; TF1* func_zdc[Nbins+1];
+	TF1* fitJSignal[Nbins+1]; TF1* fitJSignal_zdc[Nbins+1];
+	TF1* fitJBkg[Nbins+1]; TF1* fitJBkg_zdc[Nbins+1];
 
 	int ptNbins = sizeof(ptbins)/sizeof(ptbins[0]) - 1;
 	int pt2Nbins = sizeof(pt2bins)/sizeof(pt2bins[0]) - 1;
 	TH1D* JpsiPt = new TH1D("JpsiPt","JpsiPt",ptNbins,ptbins);
 	TH1D* JpsiPt2 = new TH1D("JpsiPt2","JpsiPt2",pt2Nbins,pt2bins);
+	TH1D* JpsiPt2_zdc = new TH1D("JpsiPt2_zdc","JpsiPt2_zdc",pt2Nbins,pt2bins);
 	TH1D* EEPt2 = new TH1D("EEPt2","EEPt2",pt2Nbins,pt2bins);
-
- //Jpsi efficiency from embedding. 
-	TFile * file_embed = new TFile("output-PreStep_2-embedding.root");
-	TH2D* hJpsiMass_Pt2_embed = (TH2D*) file_embed->Get("hJpsiMass_Pt2");
-	TH2D* hLikeSignMass_Pt2_embed = (TH2D*) file_embed->Get("hLikeSignMass_Pt2");
-	TH1D* hMCDielectronPt2 = (TH1D*) file_embed->Get("hMCDielectronPt2");
-	
-	TH1D* hMCDielectronPt2_match = (TH1D*) file_embed->Get("hMCDielectronPt2_match");
-	TH1D* hJpsiPt2_match = (TH1D*) file_embed->Get("hJpsiPt2_match");
-	for(int i = 0; i < Nbins; i++){
-		double binwidth = hJpsiPt2_match->GetBinWidth(i+1);
-		double value = hJpsiPt2_match->GetBinContent(i+1);
-		double error = hJpsiPt2_match->GetBinError(i+1);
-
-		hJpsiPt2_match->SetBinContent(i+1, value/binwidth);
-		hJpsiPt2_match->SetBinError(i+1, error/binwidth);
-
-		binwidth = hMCDielectronPt2_match->GetBinWidth(i+1);
-		value = hMCDielectronPt2_match->GetBinContent(i+1);
-		error = hMCDielectronPt2_match->GetBinError(i+1);
-
-		hMCDielectronPt2_match->SetBinContent(i+1, value/binwidth);
-		hMCDielectronPt2_match->SetBinError(i+1, error/binwidth);
-	}
-
-//jpsi resolution
-	TCanvas *c4 = new TCanvas("c4","c4",1,1,600,600);
-	gPad->SetLogy(1);
-	hJpsiPt2_match->SetStats(kFALSE);
-	hJpsiPt2_match->SetTitle("");
-	hJpsiPt2_match->GetXaxis()->SetTitle("p^{2}_{T} (GeV^{2})");
-	hJpsiPt2_match->SetMarkerStyle(20);
-	hJpsiPt2_match->Draw();
-	hMCDielectronPt2_match->SetMarkerStyle(24);
-	hMCDielectronPt2_match->Draw("Psame");
-
-	TLegend *w44 = new TLegend(0.4,0.65,0.75,0.85);
-	w44->SetLineColor(kWhite);
-	w44->SetFillColor(0);
-	w44->SetTextSize(20);
-	w44->SetTextFont(45);
-	w44->AddEntry(hJpsiPt2_match, "RECO matched ", "P");
-	w44->AddEntry(hMCDielectronPt2_match, "GEN  ", "P");
-	w44->Draw("same");
-//end resolution
-
-//jpsi bin-by-bin efficiency
-	TH1D* hJpsiMass_Pt2_1D_embed[Nbins+1];
-	TH1D* hLikeSignMass_Pt2_1D_embed[Nbins+1];
-	TH1D* jpsiEff = new TH1D("jpsiEff","jpsiEff",pt2Nbins,pt2bins);
-	for(int i = 0; i < Nbins; i++){
-		hJpsiMass_Pt2_1D_embed[i] = (TH1D*) hJpsiMass_Pt2_embed->ProjectionX(Form("MCmass_%d",i),i+1,i+1);
-		hLikeSignMass_Pt2_1D_embed[i] = (TH1D*) hLikeSignMass_Pt2_embed->ProjectionX(Form("MCLikeSignmass_%d",i),i+1,i+1);
-		double reco = hJpsiMass_Pt2_1D_embed[i]->Integral(); // no mass window cut
-		double likesign = hLikeSignMass_Pt2_1D_embed[i]->Integral();
-		reco = reco - likesign;
-		double gen = hMCDielectronPt2->GetBinContent(i+1);
-		if( gen <= 0 ) continue;
-		jpsiEff->SetBinContent(i+1, reco/gen);
-		jpsiEff->SetBinError(i+1, sqrt(reco)/gen);
-	}	
-	jpsiEff->Fit("pol0","ER0","",0.1,3);
-	TF1* fitFunc = (TF1*) jpsiEff->GetFunction("pol0");
-	double eff_high = fitFunc->GetParameter(0);
-
-//total eff:
-	hJpsiMass_Pt2_1D_embed[Nbins] = (TH1D*) hJpsiMass_Pt2_embed->ProjectionX(Form("MCmass_%d",Nbins),1,Nbins);
-	double reco = hJpsiMass_Pt2_1D_embed[Nbins]->Integral(); // no mass window cut
-	double gen = hMCDielectronPt2->Integral();
-	double eff_total = reco/gen;
-//end efficiency
 
 	for(int i = 0; i < Nbins+1; i++){
 		
@@ -188,7 +127,6 @@ void runStep_1_MassFitPt2(const bool doSys_ = false, const bool draw_ = true){
 		JpsiMassForFit->SetStats(kFALSE);
 		if( i<Nbins) JpsiMassForFit->SetTitle(Form("p^{2}_{T} bin (%.3f-%.3f) GeV^{2}",pt2bins[i],pt2bins[i+1]));
 		else {
-			JpsiMassForFit->SetTitle(Form("Total yield, ave eff=%.2f",eff_total) );
 			JpsiMassForFit->GetXaxis()->SetTitle("mass (GeV/c^{2})");
 		}
 		if( draw_) {
@@ -294,19 +232,125 @@ void runStep_1_MassFitPt2(const bool doSys_ = false, const bool draw_ = true){
 		w4->AddEntry(LikeSignMassForFit, "like sign  ", "P");
 		c2->cd(Nbins+2) ;
 		w4->Draw("same");
+
+		// With ZDC:
+		c3->cd(i+1);
+
+		JpsiMassForFit = (TH1D*) hJpsiMassZDC_Pt2_1D[i]->Clone(Form("JpsiMassForFit_%d",i));
+		JpsiMassForFit->SetMarkerStyle(20);
+		JpsiMassForFit->GetXaxis()->SetTitle("mass (GeV/c^{2})");
+		if(i==Nbins) {
+			JpsiMassForFit = (TH1D*) hJpsiMassZDC->Clone(Form("JpsiMassForFit_%d",Nbins));
+		}
+		for(int j=0;j<JpsiMassForFit->GetNbinsX();j++){
+			double binwidth = JpsiMassForFit->GetBinWidth(j+1);
+			double value = JpsiMassForFit->GetBinContent(j+1);
+			double error = JpsiMassForFit->GetBinError(j+1);
+
+			JpsiMassForFit->SetBinContent(j+1, value/binwidth);
+			JpsiMassForFit->SetBinError(j+1, error/binwidth);
+		}
+		
+		JpsiMassForFit->SetMarkerStyle(20);
+		JpsiMassForFit->GetXaxis()->SetRangeUser(2.,3.5);
+		if( i<Nbins) JpsiMassForFit->GetYaxis()->SetRangeUser(0.1,40/(0.1));
+		else JpsiMassForFit->GetYaxis()->SetRangeUser(0.1,180/(0.1));
+		JpsiMassForFit->SetStats(kFALSE);
+		if( i<Nbins) JpsiMassForFit->SetTitle(Form("p^{2}_{T} bin (%.3f-%.3f) GeV^{2}",pt2bins[i],pt2bins[i+1]));
+		else {
+			JpsiMassForFit->GetXaxis()->SetTitle("mass (GeV/c^{2})");
+		}
+		if( draw_) {
+			JpsiMassForFit->Draw("PE");
+		}
+
+		hist = (TH1D*) hJpsiMass_mc->Clone(Form("hJpsiMass_mc_template_%d",i) );
+		hist->Scale(1./(hist->Integral()));
+
+		func_zdc[i] = new TF1(Form("funczdc_%d",i),fitJpsiMass,2.0,3.5,5);
+		func_zdc[i]->SetParameter(0,300.);
+		func_zdc[i]->SetParameter(1,1.1 );
+		func_zdc[i]->SetParameter(2,-1);
+		func_zdc[i]->SetParameter(3,0.12);
+		func_zdc[i]->SetParameter(4,1000);
+
+		r = JpsiMassForFit->Fit(Form("funczdc_%d",i),"S0+");
+		count = 0;
+		while( (!r->IsValid() || r->CovMatrixStatus()!= 3) && count < 10 ) {
+			func[i]->SetParameter(0,r->Parameter(0));
+			func[i]->SetParameter(1,r->Parameter(1) );
+			func[i]->SetParameter(2,r->Parameter(2));
+			func[i]->SetParameter(3,r->Parameter(3));
+			func[i]->SetParameter(4,r->Parameter(4));
+			r = JpsiMassForFit->Fit(Form("func_%d",i),"S0+");
+			count++;
+		}
+
+		TF1* drawFitzdc = (TF1*) JpsiMassForFit->GetFunction(Form("funczdc_%d",i));	
+		drawFitzdc->SetLineColor(kRed);
+		if( draw_) drawFitzdc->Draw("Lsame");
+		chi2 = r->Chi2();
+		cout << "Fit IsValid ~ " << r->IsValid() << endl;
+		cout << "Fit Error Status ~ " << r->CovMatrixStatus() << endl;
+		ndf = r->Ndf();
+
+		fitJSignal_zdc[i] = new TF1(Form("fitJSignal_zdc_%d",i),JpsiSig,2.0,3.5,1);
+		fitJSignal_zdc[i]->SetParameter(0, drawFitzdc->GetParameter(0));
+		fitJSignal_zdc[i]->SetParError(0, drawFitzdc->GetParError(0) );
+		fitJSignal_zdc[i]->SetLineColor(kOrange-3);
+	    fitJSignal_zdc[i]->SetLineWidth(1);
+	    fitJSignal_zdc[i]->SetLineStyle(2);
+	    fitJSignal_zdc[i]->SetFillColorAlpha(kOrange-3,0.3);
+	    fitJSignal_zdc[i]->SetFillStyle(1001);
+	    fitJSignal_zdc[i]->SetNpx(5000);
+		if( draw_) fitJSignal_zdc[i]->Draw("Lsame");
+
+		fitJBkg_zdc[i] = new TF1(Form("fitJBkg_zdc_%d",i),JpsiBkg,2.0,3.5,4);
+		fitJBkg_zdc[i]->SetParameter(0, drawFitzdc->GetParameter(1) );
+		fitJBkg_zdc[i]->SetParameter(1, drawFitzdc->GetParameter(2) );
+		fitJBkg_zdc[i]->SetParameter(2, drawFitzdc->GetParameter(3) );
+		fitJBkg_zdc[i]->SetParameter(3, drawFitzdc->GetParameter(4) );
+		fitJBkg_zdc[i]->SetLineStyle(2);
+		fitJBkg_zdc[i]->SetLineColor(kBlue);
+		if( draw_) fitJBkg_zdc[i]->Draw("Lsame");
+
+		TLatex* r5011 = new TLatex(0.23,0.84, Form("#chi^{2}/ndf ~ %f", chi2/ndf ));
+		r5011->SetNDC();
+		r5011->SetTextSize(16);
+		r5011->SetTextFont(44);
+		if( draw_) r5011->Draw("same");
+
+		cout << "chi2/ndf ~ " << chi2/ndf << endl;
+		cout << "signal yield ~ " << fitJSignal_zdc[i]->GetParameter(0) << " +- " << fitJSignal_zdc[i]->GetParError(0) << endl;
+		cout << "total yield ~ " << JpsiMassForFit->Integral(JpsiMassForFit->FindBin(2.7), JpsiMassForFit->FindBin(3.3)) << endl;
+		cout << "background yield ~ " << fitJBkg_zdc[i]->Integral(2.0,3.5) << endl;
+		cout << "likesign yield ~ " << LikeSignMassForCount->Integral(LikeSignMassForFit->FindBin(2.0),LikeSignMassForFit->FindBin(3.5)) << endl;
+
+		TLatex* r5012 = new TLatex(0.23,0.78, Form("signal yield ~ %.2f #pm %.2f", fitJSignal_zdc[i]->GetParameter(0), fitJSignal_zdc[i]->GetParError(0)));
+		r5012->SetNDC();
+		r5012->SetTextSize(16);
+		r5012->SetTextFont(44);
+		if( draw_) r5012->Draw("same");
+
+		//yield from fitting
+		yield = fitJSignal_zdc[i]->GetParameter(0);
+		error = fitJSignal_zdc[i]->GetParError(0);		
+		
+		JpsiPt2_zdc->SetBinContent(i+1, yield );
+		JpsiPt2_zdc->SetBinError(i+1, error );
 	}
 
-	TLatex* r42 = new TLatex(0.18, 0.91, "dAu #sqrt{s_{_{NN}}} = 200 GeV");
+	TLatex* r42 = new TLatex(0.18, 0.91, "d+Au #sqrt{s_{_{NN}}} = 200 GeV");
 	r42->SetNDC();
 	r42->SetTextSize(23);
 	r42->SetTextFont(43);
 	r42->SetTextColor(kBlack);
 
-	TLatex* r43 = new TLatex(0.67,0.91, "STAR");
+	TLatex* r43 = new TLatex(0.61,0.91, "STAR");
 	r43->SetNDC();
 	r43->SetTextSize(0.04);
 
-	TLatex* r44 = new TLatex(0.78,0.91, "Internal");
+	TLatex* r44 = new TLatex(0.72,0.91, "Preliminary");
 	r44->SetNDC();
 	r44->SetTextSize(21);
 	r44->SetTextFont(53);
@@ -369,7 +413,7 @@ void runStep_1_MassFitPt2(const bool doSys_ = false, const bool draw_ = true){
 			JpsiMassForFit->GetYaxis()->SetTitleOffset(1.2*(JpsiMassForFit->GetYaxis()->GetTitleOffset()));
 			JpsiMassForFit->GetYaxis()->SetTitleSize(1.2*(JpsiMassForFit->GetYaxis()->GetTitleSize()));
 			JpsiMassForFit->GetYaxis()->CenterTitle();
-			JpsiMassForFit->GetYaxis()->SetTitle( Form("Candidates / %.2f GeV/c^{2}", JpsiMassForFit->GetBinWidth(1)));
+			JpsiMassForFit->GetYaxis()->SetTitle("dN/dm (GeV/c^{2})^{-1}");
 		}
 		if( draw_) {
 			JpsiMassForFit->GetYaxis()->SetNdivisions(5,5,0);
@@ -506,8 +550,8 @@ void runStep_1_MassFitPt2(const bool doSys_ = false, const bool draw_ = true){
 	JpsiPt2->Fit("expoFit","0","",0,0.2);
 	JpsiPt2->Draw("Psame");
 
-	EEPt2->SetMarkerStyle(24);
-	EEPt2->Draw("Psame");
+	JpsiPt2_zdc->SetMarkerStyle(24);
+	JpsiPt2_zdc->Draw("Psame");
 
 	TLatex* r45 = new TLatex(0.18, 0.80, "|#eta_{e}| < 1.0, p_{T,e} > 0.5 GeV/c");
 	r45->SetNDC();
@@ -540,8 +584,15 @@ void runStep_1_MassFitPt2(const bool doSys_ = false, const bool draw_ = true){
 	if( doSys_ ) outputname = "systematics-input/electron/output-Step_1-electron_"+name_of_template+".root";
 	TFile outputfile(outputname,"RECREATE");
 	JpsiPt2->Write();
+	JpsiPt2_zdc->Write();
 
-	c2->Print("systematics-figures/electron/fit-signal-template_"+name_of_template+".pdf");
+	c1_2->Print("Preliminary/Figure_01_a.pdf");
+	// c2->Print("systematics-figures/electron/fit-signal-template_"+name_of_template+".pdf");
+	c2->Print("Preliminary/Figure_01_b.pdf");
+	c3->Print("Preliminary/Figure_01_c.pdf");
+
+	
+
 
 
 }

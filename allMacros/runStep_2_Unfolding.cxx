@@ -157,6 +157,13 @@ void runStep_2_Unfolding( const bool doSys_ = false )
   int pt2TruthNbins = sizeof(pt2bins_truth)/sizeof(pt2bins_truth[0]) - 1;
   int pt2MeasuNbins = sizeof(pt2bins_measu)/sizeof(pt2bins_measu[0]) - 1;
 
+  TH2D* hJpsiReso = new TH2D("hJpsiReso",";J/#psi gen p^{2}_{T};p^{2}_{T,gen}-p^{2}_{T,reco}/p^{2}_{T,gen}",pt2TruthNbins,pt2bins_truth,500,-10,10);
+  TH1D* h_pt_REC = new TH1D("h_pt_REC","h_pt_REC",100,0,2.0);
+  TH1D* h_pt_GEN = new TH1D("h_pt_GEN","h_pt_GEN",100,0,2.0);
+
+  TH1D* h_pt2_RECGEN = new TH1D("h_pt2_RECGEN","h_pt2_RECGEN",pt2TruthNbins,pt2bins_truth);
+  TH1D* h_pt2_RECOnly = new TH1D("h_pt2_RECOnly","h_pt2_RECOnly",pt2TruthNbins,pt2bins_truth);
+
   TH1D* hTruth = new TH1D("hTruth","hTruth",pt2TruthNbins,pt2bins_truth);
   TH1D* hMeasu = new TH1D("hMeasu","hMeasu",pt2MeasuNbins,pt2bins_measu);
 
@@ -164,99 +171,64 @@ void runStep_2_Unfolding( const bool doSys_ = false )
 
   for(int i=0;i<tree->GetEntries();i++){
     tree->GetEntry(i);
-  
-    if( eventPass_tiny != 1 ) continue;
 
     TLorentzVector pMC(0,0,0,0);
     TLorentzVector pREC(0,0,0,0);
     vector< TLorentzVector> pREC_collection, pMC_collection;
-   
+    pREC_collection.clear();pMC_collection.clear();
     for(int imc=0;imc<mMCnOS_tiny;imc++){
       pMC.Clear();
       pMC.SetPxPyPzE(mMC_px_tiny[imc],mMC_py_tiny[imc],mMC_pz_tiny[imc],mMC_E_tiny[imc]);
       pMC_collection.push_back( pMC );
+      h_pt_GEN->Fill( pMC.Pt(), weight_evt );
     }
 
-    for(int irec=0;irec<mRECnOS_tiny;irec++){
-      pREC.Clear();
-      pREC.SetPxPyPzE(mREC_OS_px_tiny[irec],mREC_OS_py_tiny[irec],mREC_OS_pz_tiny[irec],mREC_OS_E_tiny[irec]);
-      pREC_collection.push_back( pREC );
+    if( eventPass_tiny == 1 ){
+      for(int irec=0;irec<mRECnOS_tiny;irec++){
+        pREC.Clear();
+        pREC.SetPxPyPzE(mREC_OS_px_tiny[irec],mREC_OS_py_tiny[irec],mREC_OS_pz_tiny[irec],mREC_OS_E_tiny[irec]);
+        pREC_collection.push_back( pREC );
+        h_pt_REC->Fill( pREC.Pt(), weight_evt );
+      }
     }
-    
-    //case 1 to find fake
-    if( pMC_collection.size() < pREC_collection.size() ){
-
-      double deltaR_min = 999.;
-      int real_index = -1;
-
-      for( int j=0;j<pREC_collection.size();j++){
-        for(int k = 0; k<pMC_collection.size();k++){
-          TVector3 rec3 = pREC_collection[j].Vect();
-          TVector3 mc3 = pMC_collection[k].Vect();
-          if(rec3.DeltaR( mc3 ) < deltaR_min){
-            deltaR_min = rec3.DeltaR( mc3 );
-            real_index = j;
-          }
+  
+    if( pMC_collection.size() == 0 ) continue;
+    for( int j=0;j<pMC_collection.size();j++){
+      double pt2GEN = pMC_collection[j].Pt() * pMC_collection[j].Pt();
+      if(pREC_collection.size() > 0){
+        for(int k=0;k<pREC_collection.size();k++){
+          double pt2REC = pREC_collection[k].Pt() * pREC_collection[k].Pt();
+          response.Fill( pt2REC, pt2GEN, weight_evt );
+          hJpsiReso->Fill( pt2GEN, (pt2GEN-pt2REC)/pt2GEN);
         }
       }
-
-      for(int ifak=0;ifak<pREC_collection.size();ifak++){
-        if( ifak == real_index ) continue;
-        double pt2REC = pREC_collection[ ifak ].Pt()*pREC_collection[ ifak ].Pt();
-        response.Fake(pt2REC, weight_evt);
+      else{
+        response.Miss(pt2GEN, weight_evt); 
       }
     }
-    //case 2, should be mostly 1-1
-    else if( pMC_collection.size() == pREC_collection.size() ){
 
-      double deltaR_min = 999.;
-      int real_index_rec = -1;
-      int real_index_mc = -1;
-      for( int j=0;j<pREC_collection.size();j++){
-        for(int k = 0; k<pMC_collection.size();k++){
-          TVector3 rec3 = pREC_collection[j].Vect();
-          TVector3 mc3 = pMC_collection[k].Vect();
-          if(rec3.DeltaR( mc3 ) < deltaR_min){
-            deltaR_min = rec3.DeltaR( mc3 );
-            real_index_rec = j;
-            real_index_mc = k;
-          }
-            
-        }
-      }
-      if( real_index_rec < 0  ) continue;
-      double pt2REC = pREC_collection[real_index_rec].Pt()*pREC_collection[real_index_rec].Pt();
-      double pt2MC  = pMC_collection[real_index_mc].Pt()*pMC_collection[real_index_mc].Pt();
-      response.Fill(pt2REC,pt2MC, weight_evt);
-    }
-    //case to find miss
-    else{
-      double deltaR_min = 999.;
-      int real_index_rec = -1;
-      int real_index_mc = -1;
-      for( int j=0;j<pREC_collection.size();j++){
-        for(int k = 0; k<pMC_collection.size();k++){
-          TVector3 rec3 = pREC_collection[j].Vect();
-          TVector3 mc3 = pMC_collection[k].Vect();
-          if(rec3.DeltaR( mc3 ) < deltaR_min){
-            deltaR_min = rec3.DeltaR( mc3 );
-            real_index_rec = j;
-            real_index_mc = k;
-          }
-        }
-      }
+    //purity and migration;
+    if( pMC_collection.size()==1 && pREC_collection.size()==1 ){
+      double pt2GEN = pMC_collection[0].Pt() * pMC_collection[0].Pt();
+      double pt2REC = pREC_collection[0].Pt() * pREC_collection[0].Pt();
 
-      for(int imiss=0;imiss<pMC_collection.size();imiss++){
-        if( imiss == real_index_mc ) {
-          double pt2REC = pREC_collection[real_index_rec].Pt()*pREC_collection[real_index_rec].Pt();
-          double pt2MC  = pMC_collection[real_index_mc].Pt()*pMC_collection[real_index_mc].Pt();
-          response.Fill(pt2REC, pt2MC, weight_evt);
-          continue;
+      int gen_index = -2;
+      int rec_index = -1;
+      for(int ibin=0;ibin<pt2TruthNbins;ibin++){
+        if( pt2GEN > pt2bins_truth[ibin] && pt2GEN < pt2bins_truth[ibin+1] ){
+          gen_index = ibin;
         }
-        double pt2MC = pMC_collection[ imiss ].Pt()*pMC_collection[ imiss ].Pt();
-        response.Fake(pt2MC, weight_evt);
+        if( pt2REC > pt2bins_truth[ibin] && pt2REC < pt2bins_truth[ibin+1] ){
+          rec_index = ibin;
+        }
       }
+      if( gen_index == rec_index ){
+        h_pt2_RECGEN->Fill( pt2REC );
+      }
+      h_pt2_RECOnly->Fill( pt2REC );
     }
+    //end purity
+
   }
 
   cout << "==================================== TEST =====================================" << endl;
@@ -269,15 +241,18 @@ void runStep_2_Unfolding( const bool doSys_ = false )
   else{file_data = new TFile("output-Step_1.root");}
   
   TH1D* hMeasured = (TH1D*) file_data->Get("JpsiPt2");
+  TH1D* hMeasured_zdc = (TH1D*) file_data->Get("JpsiPt2_zdc");
 
   cout << "==================================== UNFOLD ===================================" << endl;
   RooUnfoldBayes   unfold (&response, hMeasured, 20);    // OR
+  RooUnfoldBayes   unfold_zdc (&response, hMeasured_zdc, 20);    // OR
 // RooUnfoldSvd     unfold (&response, hMeasured, 20);   // OR
 // RooUnfoldBinByBin     unfold (&response, hMeasured);   // OR
   // RooUnfoldTUnfold unfold (&response, hMeasured);       // OR
 //RooUnfoldIds     unfold (&response, hMeas, 1);
 
   TH1D* hReco= (TH1D*) unfold.Hreco();
+  TH1D* hReco_zdc = (TH1D*) unfold_zdc.Hreco();
 
   TCanvas* c1= new TCanvas("canvas","canvas");
   
@@ -286,19 +261,33 @@ void runStep_2_Unfolding( const bool doSys_ = false )
     hReco->SetBinContent(j+1, hReco->GetBinContent(j+1)/(hReco->GetBinWidth(j+1)) );
     hReco->SetBinError(j+1, hReco->GetBinError(j+1)/(hReco->GetBinWidth(j+1)) );
 
+    hReco_zdc->SetBinContent(j+1, hReco_zdc->GetBinContent(j+1)/(hReco_zdc->GetBinWidth(j+1)) );
+    hReco_zdc->SetBinError(j+1, hReco_zdc->GetBinError(j+1)/(hReco_zdc->GetBinWidth(j+1)) );
+
     double eff = hist_binBybin->GetBinContent(j+1);
     hMeasured->SetBinContent(j+1, hMeasured->GetBinContent(j+1)/(hMeasured->GetBinWidth(j+1)) );
     hMeasured->SetBinError(j+1, hMeasured->GetBinError(j+1)/(hMeasured->GetBinWidth(j+1)) );
   }
 
+  hReco->SetName("jpsi_total");
   hReco->SetMarkerStyle(20);
   hReco->Draw("P");
+  hReco_zdc->SetName("jpsi_zdc");
+  hReco_zdc->SetMarkerStyle(21);
+  hReco_zdc->Draw("Psame");
   hMeasured->SetMarkerStyle(24);
   hMeasured->Draw("PSAME");
 
   TFile outfile("output-Step_2.root","RECREATE");
   hReco->Write();
+  hReco_zdc->Write();
   response.Hresponse()->Write();
+  h_pt_REC->Write();
+  h_pt_GEN->Write();
+  hJpsiReso->Write();
+  h_pt2_RECGEN->Write();
+  h_pt2_RECOnly->Write();
+
 
 }
 

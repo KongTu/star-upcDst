@@ -116,7 +116,7 @@ void fourier(double tmax = -1)
     double y_jpsi_upc[200];
     double ey_jpsi_upc[200];
 
-    TF1* coh = new TF1("coh","170*TMath::Exp(-9.4*x[0])",0,5);
+    TF1* coh = new TF1("coh","170*TMath::Exp(-6.8*x[0])",0,5);
     for(int i=0;i<50;i++){
         t_jpsi_upc[i] = 0+i*0.05;
         y_jpsi_upc[i] = coh->Eval(t_jpsi_upc[i]);

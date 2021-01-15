@@ -22,6 +22,9 @@ void runPreStep_1_smearMass(const bool doSmearing_ = true){
 		} 
 	}
 
+	TFile* file_reweight = new TFile("reweight_vertex.root");
+	TH1D* hTotal = (TH1D*) file_reweight->Get("hTotal");
+
 	TTree* tree = (TTree*) file->Get("myTree");
 
 	Bool_t isTrigger_mini[4];
@@ -68,7 +71,6 @@ void runPreStep_1_smearMass(const bool doSmearing_ = true){
 	Float_t mBemcClsPhi_mini[MAXTracks]; // phi of matched BEMC cluster
 
 	//MC particles
-	
 	Int_t mMCnTracks_mini = 0;
 	Double32_t mMC_px_mini[MAXTracks];
 	Double32_t mMC_py_mini[MAXTracks];
@@ -152,66 +154,101 @@ void runPreStep_1_smearMass(const bool doSmearing_ = true){
 				for(int imc = 0; imc < mMCnTracks_mini; imc++){
 					TLorentzVector eMCParticle(mMC_px_mini[imc], mMC_py_mini[imc],mMC_pz_mini[imc],mMC_E_mini[imc]);
 					if( TMath::Abs(mMC_pdg_mini[imc]) != 11 ) continue;
-					if( TMath::Abs(eMCParticle.Eta()) > 1.0 ) continue;
+					if( imc >= 2 ) continue;
 					if( mMC_pdg_mini[imc] == -11 ) e_MC_plus.push_back( eMCParticle );
 					if( mMC_pdg_mini[imc] == +11 ) e_MC_minus.push_back( eMCParticle );
+
 				}
 				if( e_MC_plus.size() < 1 || e_MC_minus.size() < 1 ) continue;
+				TLorentzVector jpsi = e_MC_plus[0]+e_MC_minus[0];
+				double genPt2 = jpsi.Pt() * jpsi.Pt();
+				double weight = hTotal->GetBinContent(hTotal->FindBin( genPt2 ));
 
-				TLorentzVector e1,e2;
-				mNSigmaE1.clear();
-				mNSigmaE2.clear();
-				mNSigmaPi1.clear();
-				mNSigmaPi2.clear();
-				e_plus.clear();
-				e_minus.clear();
-
+				//reco
+				double deltaR_minPlus = 999.;
+				double deltaR_minMinus = 999.;
+				int bestIndex = -1;
+				TVector3 bestMatchEplus(0,0,0);
+				TVector3 bestMatchEminus(0,0,0);
 				int Nparticles = 0;
 				for(int itrk = 0; itrk < mNumberOfTracks_mini; itrk++){
 
 					if( (int) mVtxId_mini[itrk] != ivtx ) continue;
-					if( mNhitsDEdx_mini[itrk] < 10 ) continue;
-					if( mNhitsFit_mini[itrk] < 13 ) continue;
+					if( mNhitsDEdx_mini[itrk] < 15 ) continue;
+					if( mNhitsFit_mini[itrk] < 25 ) continue;
 					if( fabs(mEta_mini[itrk]) > 1.0 ) continue;
 					if( fabs(mDcaXY_mini[itrk]) > 3.0 ) continue;
 					if( fabs(mDcaZ_mini[itrk]) > 3.0 ) continue;
-					if( !mFlagBemc_mini[itrk] ) continue;				
+					if( !mFlagBemc_mini[itrk] ) continue;
+
+					TVector3 part3;
+					part3.SetPtEtaPhi(mPt_mini[itrk],mEta_mini[itrk],mPhi_mini[itrk]);
+					TLorentzVector eMCParticle_plus = e_MC_plus[0];
+					TLorentzVector eMCParticle_minus = e_MC_minus[0];
 
 					if( mCharge_mini[itrk] == +1 ){
-						double pt_smearing = (mPt_mini[itrk] - e_MC_plus[0].Pt())/e_MC_plus[0].Pt();
-						double Nsigma = pt_smearing/pt_indep_sigma;
-						double sigma_new = sqrt( (a*e_MC_plus[0].Pt())*(a*e_MC_plus[0].Pt()) + b*b);
-						if(doSmearing_) mPt_mini[itrk] = e_MC_plus[0].Pt()*(sigma_new*Nsigma+1);
+						if( eMCParticle_plus.Pt() < 1.0 ) pt_indep_sigma = 0.008;
+						if( eMCParticle_plus.Pt() > 1.0 && eMCParticle_plus.Pt() < 1.2 ) pt_indep_sigma = 0.01;
+						 
+						if( isMatch(part3,eMCParticle_plus) ){
+							TVector3 partmc3 = eMCParticle_plus.Vect();
+							if( part3.DeltaR(partmc3) < deltaR_minPlus ) {
+								deltaR_minPlus=part3.DeltaR(partmc3);
+								bestMatchEplus = part3;
 
+								double pt_smearing = (mPt_mini[itrk] - e_MC_plus[0].Pt())/e_MC_plus[0].Pt();
+								double Nsigma = pt_smearing/pt_indep_sigma;
+								double sigma_new = sqrt( (a*e_MC_plus[0].Pt())*(a*e_MC_plus[0].Pt()) + b*b);
+								if(doSmearing_) mPt_mini[itrk] = e_MC_plus[0].Pt()*(sigma_new*Nsigma+1);
+								if( mPt_mini[itrk] < 0.5 ) bestMatchEplus.SetPtEtaPhi(0,0,0);
+								else bestMatchEplus.SetPtEtaPhi(mPt_mini[itrk],part3.Eta(),part3.Phi() );
+							}
+						}
 					}
 					if( mCharge_mini[itrk] == -1 ){
-						double pt_smearing = (mPt_mini[itrk] - e_MC_minus[0].Pt())/e_MC_minus[0].Pt();
-						double Nsigma = pt_smearing/pt_indep_sigma;
-						double sigma_new = sqrt( (a*e_MC_minus[0].Pt())*(a*e_MC_minus[0].Pt()) + b*b);
-						if(doSmearing_) mPt_mini[itrk] = e_MC_minus[0].Pt()*(sigma_new*Nsigma+1);
+						if( eMCParticle_minus.Pt() < 1.0 ) pt_indep_sigma = 0.008;
+						if( eMCParticle_minus.Pt() > 1.0 && eMCParticle_plus.Pt() < 1.2 ) pt_indep_sigma = 0.01;
 
+						if( isMatch(part3,eMCParticle_minus) ){
+							TVector3 partmc3 = eMCParticle_minus.Vect();
+							if( part3.DeltaR(partmc3) < deltaR_minMinus ) {
+								deltaR_minMinus=part3.DeltaR(partmc3);
+								bestMatchEminus = part3;
+
+								double pt_smearing = (mPt_mini[itrk] - e_MC_minus[0].Pt())/e_MC_minus[0].Pt();
+								double Nsigma = pt_smearing/pt_indep_sigma;
+								double sigma_new = sqrt( (a*e_MC_minus[0].Pt())*(a*e_MC_minus[0].Pt()) + b*b);
+								if(doSmearing_) mPt_mini[itrk] = e_MC_minus[0].Pt()*(sigma_new*Nsigma+1);
+								if( mPt_mini[itrk] < 0.5 ) bestMatchEminus.SetPtEtaPhi(0,0,0);
+								else bestMatchEminus.SetPtEtaPhi(mPt_mini[itrk],part3.Eta(),part3.Phi() );
+							}
+						}
 					}
-					if( mPt_mini[itrk] < 0.5 ) continue;
 
-					Nparticles++;
-
-					if( mCharge_mini[itrk] == +1 ){
-						e1.SetPtEtaPhiM(mPt_mini[itrk],mEta_mini[itrk],mPhi_mini[itrk],MASS_ELECTRON);
-						e_plus.push_back( e1 );
-						mNSigmaE1.push_back(mNSigmasTPCElectron_mini[itrk]);
-						mNSigmaPi1.push_back(mNSigmasTPCPion_mini[itrk]);
-					}
-
-					if( mCharge_mini[itrk] == -1 ){
-						e2.SetPtEtaPhiM(mPt_mini[itrk],mEta_mini[itrk],mPhi_mini[itrk],MASS_ELECTRON);
-						e_minus.push_back( e2 );
-						mNSigmaE2.push_back(mNSigmasTPCElectron_mini[itrk]);
-						mNSigmaPi2.push_back(mNSigmasTPCPion_mini[itrk]);
-					}
 				}
 
+				if( bestMatchEplus.Pt() == 0 || bestMatchEminus.Pt() == 0 ) continue;
+			
+				e_plus.clear();
+				e_minus.clear();
+				TLorentzVector bestMatchEplus4vect,bestMatchEminus4vect;
+				bestMatchEplus4vect.SetPtEtaPhiM(bestMatchEplus.Pt(),bestMatchEplus.Eta(),bestMatchEplus.Phi(), MASS_ELECTRON);
+				bestMatchEminus4vect.SetPtEtaPhiM(bestMatchEminus.Pt(),bestMatchEminus.Eta(),bestMatchEminus.Phi(), MASS_ELECTRON);
+				e_plus.push_back( bestMatchEplus4vect );
+				e_minus.push_back( bestMatchEminus4vect );
+
+				//unlike-sign pair loop
+				for( unsigned itrk = 0; itrk < e_plus.size(); itrk++ ){
+					for( unsigned jtrk = 0; jtrk < e_minus.size(); jtrk++ ){
+
+						TLorentzVector e_inv;
+						e_inv = e_plus[itrk]+e_minus[jtrk];
+						if( fabs(e_inv.Rapidity()) > 1.0 ) continue;
+						hJpsiMass[incre][j]->Fill( e_inv.M(),weight );
+						
+					}
+				}
 				//at least 2 tracks events are required
-				if( Nparticles < 2 ) continue;
 				if( e_MC_plus.size() == 1 && e_plus.size() == 1 ){
 					double reso = (e_plus[0].Pt() - e_MC_plus[0].Pt())/(e_MC_plus[0].Pt());
 					hPtSmear2D->Fill(e_MC_plus[0].Pt(), reso );
@@ -223,23 +260,6 @@ void runPreStep_1_smearMass(const bool doSmearing_ = true){
 					hPtRes1D->Fill( reso );
 				}
 
-				//unlike-sign pair loop
-				for( unsigned itrk = 0; itrk < e_plus.size(); itrk++ ){
-					for( unsigned jtrk = 0; jtrk < e_minus.size(); jtrk++ ){
-
-						double chi2_e = mNSigmaE1[itrk]*mNSigmaE1[itrk] + mNSigmaE2[jtrk]*mNSigmaE2[jtrk];
-						double chi2_p = mNSigmaPi1[itrk]*mNSigmaPi1[itrk] + mNSigmaPi2[jtrk]*mNSigmaPi2[jtrk];
-				
-						// if( chi2_p<30 && (chi2_e/chi2_p) > 1./3 ) continue;
-						// if( chi2_p>30 && chi2_e > 10. ) continue;
-
-						TLorentzVector e_inv;
-						e_inv = e_plus[itrk]+e_minus[jtrk];
-						if( fabs(e_inv.Rapidity()) > 1.0 ) continue;
-						hJpsiMass[incre][j]->Fill( e_inv.M() );
-						
-					}
-				}
 			}
 		}
 

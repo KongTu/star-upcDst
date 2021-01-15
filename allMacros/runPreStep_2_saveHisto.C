@@ -18,13 +18,7 @@ Double_t deltaPhi( double phi_1, double phi_2 ){
 	}
 	return relAngle;
 }
-Bool_t isMatch( TVector3 p1, TLorentzVector p2){
 
-	TVector3 p2_v3 = p2.Vect();
-	if( fabs(p1.Pt() - p2.Pt()) > 0.1 ) return false;
-	if( p1.DeltaR(p2_v3) > 0.1 ) return false;
-	return true;
-}
 
 void runPreStep_2_saveHisto( const bool doEmb_ = false, const bool doSmear_ = false ){
 
@@ -75,6 +69,7 @@ void runPreStep_2_saveHisto( const bool doEmb_ = false, const bool doSmear_ = fa
 	TH1D* hVtxZCut = new TH1D("hVtxZCut",";z vertex (cm)", 200,-500,500);
 	TH1D* hVtxZzdc = new TH1D("hVtxZzdc",";z vertex (cm)", 200,-1000,10000);
 	TH2D* hVtxZzdcTPC = new TH2D("hVtxZzdcTPC",";zdc;tpc",200,-1000,1000,200,-1000,1000);
+	TH1D* hVtxZzdcTPCcut = new TH1D("hVtxZzdcTPCcut",";zdc vertex",200,-1000,1000);
 	TH1D* hTofMult = new TH1D("hTofMult","hTofMult",10,0,10);
 	TH1D* hTofMultJpsi = new TH1D("hTofMultJpsi","hTofMultJpsi",10,0,10);
 	TH1D* hNtrkValid = new TH1D("hNtrkValid","N",10,0,10);
@@ -90,8 +85,6 @@ void runPreStep_2_saveHisto( const bool doEmb_ = false, const bool doSmear_ = fa
 	TH1D* hDielectronPt2 = new TH1D("hDielectronPt2","hDielectronPt2; #Dielectron p^{2}_{T} (GeV^{2})",pt2NbinsREC,pt2binsREC);
 	TH1D* hJpsiMassZDC = new TH1D("hJpsiMassZDC","hJpsiMassZDC",massNbins,massbins);
 	TH2D* hJpsiMassZDC_Pt2 = new TH2D("hJpsiMassZDC_Pt2","hJpsiMassZDC_Pt2",massNbins,massbins,pt2Nbins,pt2bins);
-	TH1D* hJpsiPolarize = new TH1D("hJpsiPolarize","hJpsiPolarize",20,-PI,PI);
-	TH1D* hJpsiPolarize2 = new TH1D("hJpsiPolarize2","hJpsiPolarize2",20,-PI,PI);
 
 	TH1D* hLikeSignMass = new TH1D("hLikeSignMass","hLikeSignMass",massNbins,massbins);
 	TH1D* hLikeSignMassZDCveto = new TH1D("hLikeSignMassZDCveto","hLikeSignMassZDCveto",massNbins,massbins);
@@ -99,20 +92,17 @@ void runPreStep_2_saveHisto( const bool doEmb_ = false, const bool doSmear_ = fa
 	TH2D* hLikeSignMassZDCveto_Pt2 = new TH2D("hLikeSignMassZDCveto_Pt2","hLikeSignMassZDCveto_Pt2",massNbins,massbins,pt2Nbins,pt2bins);
 	TH1D* hLikeSignMassZDC = new TH1D("hLikeSignMassZDC","hLikeSignMassZDC",massNbins,massbins);
 	TH2D* hLikeSignMassZDC_Pt2 = new TH2D("hLikeSignMassZDC_Pt2","hLikeSignMassZDC_Pt2",massNbins,massbins,pt2Nbins,pt2bins);
-	TH1D* hLikeSignPolarize = new TH1D("hLikeSignPolarize","hLikeSignPolarize",20,-PI,PI);
-	TH1D* hLikeSignPolarize2 = new TH1D("hLikeSignPolarize2","hLikeSignPolarize2",20,-PI,PI);
 
 	//MCParticle 
+	TH1D* hSingleTrackGEN = new TH1D("hSingleTrackGEN",";pt",100,0,5);
+	TH1D* hSingleTrackREC = new TH1D("hSingleTrackREC",";pt",100,0,5);
+	TH1D* hMatchDeltaR = new TH1D("hMatchDeltaR","#DeltaR",1000,0,3);
+	TH1D* hMatchVtxIndex = new TH1D("hMatchVtxIndex","vtx index",5,0,5);
+
 	TH1D* hMCJpsiMass = new TH1D("hMCJpsiMass","hMCJpsiMass; M_{e^{+}e^{-}} (GeV/c^{2})",60,0.4,4);
-	TH1D* hMCJpsiMassTrig = new TH1D("hMCJpsiMassTrig","hMCJpsiMassTrig; M_{e^{+}e^{-}} (GeV/c^{2})",60,0.4,4);
 	TH1D* hMCDielectronPt = new TH1D("hMCDielectronPt","hMCDielectronPt; #Dielectron p_{T} (GeV)",100,0,3);
 	TH1D* hMCDielectronPt2 = new TH1D("hMCDielectronPt2","hMCDielectronPt2; #Dielectron p^{2}_{T} (GeV^{2})",pt2Nbins,pt2bins);
-	TH1D* hMCDielectronPt2TrigEff = new TH1D("hMCDielectronPt2TrigEff","hMCDielectronPt2TrigEff; #Dielectron p^{2}_{T} (GeV^{2})",pt2Nbins,pt2bins);
-	TH1D* hMCDielectronPt2Trig = new TH1D("hMCDielectronPt2Trig","hMCDielectronPt2Trig; #Dielectron p^{2}_{T} (GeV^{2})",pt2Nbins,pt2bins);
-	TH1D* hMCDielectronPt2_match = new TH1D("hMCDielectronPt2_match","hMCDielectronPt2_match; #Dielectron p^{2}_{T} (GeV^{2})",pt2Nbins,pt2bins);
-	TH2D* hJpsiReso = new TH2D("hJpsiReso",";J/#psi gen p^{2}_{T};p^{2}_{T,gen}-p^{2}_{T,reco}/p^{2}_{T,gen}",pt2Nbins,pt2bins,100,-5,5);
-	TH2D* hJpsiGENvsRECO = new TH2D("hJpsiGENvsRECO",";J/#psi reco p^{2}_{T};J/#psi gen p^{2}_{T}",pt2Nbins,pt2bins,pt2Nbins,pt2bins);
-
+	
 	//non physics distribution
 	TH1D* h_EoverP_BEMC = new TH1D("h_EoverP_BEMC",";E/p",50,0,5.0);
 	TH1D* h_PhiDist_BEMC = new TH1D("h_PhiDist_BEMC","h_PhiDist_BEMC; PhiDist",50,0,PI);
@@ -194,7 +184,6 @@ void runPreStep_2_saveHisto( const bool doEmb_ = false, const bool doSmear_ = fa
 	Float_t mBemcClsDsmadc0_mini[MAXTracks]; // dsmadc0 of matched BEMC cluster
 
 	//MC particles
-	
 	Int_t mMCnTracks_mini = 0;
 	Double32_t mMC_px_mini[MAXTracks];
 	Double32_t mMC_py_mini[MAXTracks];
@@ -275,6 +264,9 @@ void runPreStep_2_saveHisto( const bool doEmb_ = false, const bool doSmear_ = fa
 			}
 			if(isTrigger_mini[2] == true) {
 				hVtxZzdcTPC->Fill( mZdcVertexZ_mini, mPosZ_mini[0]);
+				if( fabs(mPosZ_mini[0]) < 100 ){
+					hVtxZzdcTPCcut->Fill( mZdcVertexZ_mini );
+				}
 			}
 			hTrigSimu->Fill(isTrigger_mini[2], isSimuTrigger_mini[2] );
 			vector< double> adc0,bemcPhi;
@@ -300,62 +292,125 @@ void runPreStep_2_saveHisto( const bool doEmb_ = false, const bool doSmear_ = fa
 			h_Nvertex->Fill( mNvertex_mini, isSimuTrigger_mini[2]);
 		}
 		
+		//
+		//No event without vertex will pass here
+		//
+
+		if( mNvertex_mini <= 0 ) continue;
+		vector< TLorentzVector> e_MC_plus, e_MC_minus, j_MC;
+		if(doEmb_){
+			//MC single track
+			for(int imc = 0; imc < mMCnTracks_mini; imc++){
+				TLorentzVector eMCParticle(mMC_px_mini[imc], mMC_py_mini[imc],mMC_pz_mini[imc],mMC_E_mini[imc]);
+				if( mMC_pdg_mini[imc] == -11 ) e_MC_plus.push_back( eMCParticle );
+				if( mMC_pdg_mini[imc] == +11 ) e_MC_minus.push_back( eMCParticle );
+				if( fabs(mMC_pdg_mini[imc]) != 11 ) continue;
+				if( eMCParticle.Pt() < 0.5  ) continue;
+				if( imc >= 2 ) continue;
+				hSingleTrackGEN->Fill( eMCParticle.Pt() );
+			}
+			
+			//MC J/psi
+			for( unsigned i = 0; i < e_MC_plus.size(); i++){
+				for( unsigned j = 0; j < e_MC_minus.size(); j++){
+					TLorentzVector e_inv_MC = e_MC_plus[i] + e_MC_minus[j];
+					if( TMath::Abs(e_inv_MC.Rapidity()) > 1.0 ) continue;
+					if( e_inv_MC.Pt() < 0. ) continue;
+					if( e_inv_MC.M() < 3.0 ) continue;
+					hMCJpsiMass->Fill( e_inv_MC.M() );
+					hMCDielectronPt->Fill( e_inv_MC.Pt() );
+					hMCDielectronPt2->Fill( e_inv_MC.Pt()*e_inv_MC.Pt() );
+				}
+			}
+		}
+
+
 		//loop over different vertices
 		for(int ivtx = 0; ivtx < mNvertex_mini; ivtx++){
-			
 			//fill vertex z before cuts
 			hVtxZ->Fill( mPosZ_mini[ivtx] );
-			
 			//vertex selections:
 			if(TMath::Abs(mPosX_mini[ivtx])<1.e-5 && TMath::Abs(mPosY_mini[ivtx])<1.e-5 && TMath::Abs(mPosZ_mini[ivtx])<1.e-5) continue;
 			if(fabs(mPosZ_mini[ivtx]) > 100. ) continue; //loop over vertex and cut on Z vertex
 			hVtxZzdc->Fill( mZdcVertexZ_mini );			
-			
 			//vertex weight
 			double weight = 1.0;
 			if( doEmb_ ){
 				weight = hVtxZ_data->GetBinContent(hVtxZ_data->FindBin(mPosZ_mini[ivtx])); 
 			}
-			// weight = 1.0;
-			
-			vector< TLorentzVector> e_MC_plus, e_MC_minus, j_MC;
-			if(doEmb_){
-			//trigger efficiency
-				e_MC_plus.clear();e_MC_minus.clear();
-				for(int imc = 0; imc < mMCnTracks_mini; imc++){
-					TLorentzVector eMCParticle(mMC_px_mini[imc],mMC_py_mini[imc],mMC_pz_mini[imc],mMC_E_mini[imc]);
-					if( fabs(eMCParticle.Eta()) > 1.0 ) continue;
-					if( mMC_pdg_mini[imc] == -11 ) e_MC_plus.push_back( eMCParticle );
-					if( mMC_pdg_mini[imc] == +11 ) e_MC_minus.push_back( eMCParticle );
-				}
+			weight = 1.0;//use 1 for now
 
-				if(e_MC_plus.size() < 1 || e_MC_minus.size() < 1 ) continue;
-				for( unsigned i = 0; i < e_MC_plus.size(); i++){
-					for( unsigned j = 0; j < e_MC_minus.size(); j++){
-						TLorentzVector e_inv_MC = e_MC_plus[i] + e_MC_minus[j];
-						if( TMath::Abs(e_inv_MC.Rapidity()) > 1.0 ) continue;
-						if( e_inv_MC.Pt() < 0. ) continue;
-						if( e_inv_MC.M() < 3.0 ) continue;
-						j_MC.push_back( e_inv_MC );
-						hMCJpsiMass->Fill( e_inv_MC.M(), weight );
-						hMCDielectronPt2TrigEff->Fill( e_inv_MC.Pt()*e_inv_MC.Pt(), weight );
-						if( isSimuTrigger_mini[2] ) {
-							hMCJpsiMassTrig->Fill( e_inv_MC.M(), weight );
-							hMCDielectronPt2Trig->Fill( e_inv_MC.Pt()*e_inv_MC.Pt(), weight );
-						}
-					}
-				}
-				
-			//BEMC matching efficiency			
+			if(doEmb_){			
+				//single track efficiency
 				for(int imc = 0; imc < mMCnTracks_mini; imc++){
 					TLorentzVector eMCParticle(mMC_px_mini[imc], mMC_py_mini[imc],mMC_pz_mini[imc],mMC_E_mini[imc]);
-					if( TMath::Hypot(mMC_px_mini[imc],mMC_py_mini[imc]) < 0.5 ) continue;
-					if( TMath::Abs(eMCParticle.Eta()) > 1.0 ) continue;
+					if( fabs(mMC_pdg_mini[imc]) != 11 ) continue;
+					if( eMCParticle.Pt() < 0.5 ) continue;
+					if( imc >= 2 ) continue;
+			
+					double deltaR_minPlus = 999.;
+					double deltaR_minMinus = 999.;
+					int bestIndex = -1;
+					TVector3 bestMatchEplus(0,0,0);
+					TVector3 bestMatchEminus(0,0,0);
 					for(int itrk = 0; itrk < mNumberOfTracks_mini; itrk++){
 
 						if( (int) mVtxId_mini[itrk] != ivtx ) continue;
-						if( mNhitsDEdx_mini[itrk] < 10 ) continue;
-						if( mNhitsFit_mini[itrk] < 13 ) continue;
+						if( mNhitsDEdx_mini[itrk] < 15 ) continue;
+						if( mNhitsFit_mini[itrk] < 25 ) continue;
+						if( fabs(mEta_mini[itrk]) > 1.0 ) continue;
+						if( fabs(mDcaXY_mini[itrk]) > 3.0 ) continue;
+						if( fabs(mDcaZ_mini[itrk]) > 3.0 ) continue;
+						if( !mFlagBemc_mini[itrk] ) continue;
+						if( mPt_mini[itrk] < 0.5 ) continue;
+						TVector3 part3;
+						part3.SetPtEtaPhi(mPt_mini[itrk],mEta_mini[itrk],mPhi_mini[itrk]);
+						
+						if( mCharge_mini[itrk] == +1 && mMC_pdg_mini[imc] == -11 ){
+							if( isMatch(part3,eMCParticle) ){
+								TVector3 partmc3 = eMCParticle.Vect();
+								hMatchDeltaR->Fill( part3.DeltaR(partmc3) );
+								if( part3.DeltaR(partmc3) < deltaR_minPlus ) {
+									deltaR_minPlus=part3.DeltaR(partmc3);
+									bestMatchEplus = part3;
+									bestIndex = mVtxId_mini[itrk];
+									
+								}
+							}
+						}
+						if( mCharge_mini[itrk] == -1 && mMC_pdg_mini[imc] == +11 ){
+							if( isMatch(part3,eMCParticle) ){
+								TVector3 partmc3 = eMCParticle.Vect();
+								hMatchDeltaR->Fill( part3.DeltaR(partmc3) );
+								if( part3.DeltaR(partmc3) < deltaR_minMinus ) {
+									deltaR_minMinus=part3.DeltaR(partmc3);
+									bestMatchEminus = part3;
+									bestIndex = mVtxId_mini[itrk];
+								}
+							}
+						}
+						
+					}
+					if( bestMatchEminus.Pt() !=0 ) {
+						hSingleTrackREC->Fill( bestMatchEminus.Pt() );
+					}
+					if( bestMatchEplus.Pt() != 0 ){
+						hSingleTrackREC->Fill( bestMatchEplus.Pt() );
+					}
+				}//single track efficiency
+
+				//single track BEMC matching efficiency			
+				for(int imc = 0; imc < mMCnTracks_mini; imc++){
+					TLorentzVector eMCParticle(mMC_px_mini[imc], mMC_py_mini[imc],mMC_pz_mini[imc],mMC_E_mini[imc]);
+					if( fabs(mMC_pdg_mini[imc]) != 11 ) continue;
+					if( eMCParticle.Pt() < 0.5 ) continue;
+					if( imc >= 2 ) continue;
+
+					for(int itrk = 0; itrk < mNumberOfTracks_mini; itrk++){
+
+						if( (int) mVtxId_mini[itrk] != ivtx ) continue;
+						if( mNhitsDEdx_mini[itrk] < 15 ) continue;
+						if( mNhitsFit_mini[itrk] < 25 ) continue;
 						if( fabs(mEta_mini[itrk]) > 1.0 ) continue;
 						if( fabs(mDcaXY_mini[itrk]) > 3.0 ) continue;
 						if( fabs(mDcaZ_mini[itrk]) > 3.0 ) continue;
@@ -363,50 +418,13 @@ void runPreStep_2_saveHisto( const bool doEmb_ = false, const bool doSmear_ = fa
 
 						TVector3 reco;
 						reco.SetPtEtaPhi(mPt_mini[itrk],mEta_mini[itrk],mPhi_mini[itrk]);
-						if( isMatch(reco, eMCParticle) ) h_Pm->Fill( eMCParticle.P(), weight );
-						if( isMatch(reco, eMCParticle) && mFlagBemc_mini[itrk] ) h_Pm_BEMC->Fill( eMCParticle.P(), weight );
-						
+						if( isMatch(reco, eMCParticle)  ) h_Pm->Fill( reco.Pt(), weight );
+						if( isMatch(reco, eMCParticle) && mFlagBemc_mini[itrk] ) h_Pm_BEMC->Fill( reco.Pt(), weight );
 					}
-				}	
+				}//bemc matching
+
 			}
-
-			//event selections @ reco level: at least two valid tracks that match BEMC and > 0.5 Gev in pT.
-			int Nparticles = 0;
-			for(int itrk = 0; itrk < mNumberOfTracks_mini; itrk++){
-
-				if( (int) mVtxId_mini[itrk] != ivtx ) continue;
-
-				if( mNhitsDEdx_mini[itrk] < 10 ) continue;
-				if( mNhitsFit_mini[itrk] < 13 ) continue;
-				if( fabs(mEta_mini[itrk]) > 1.0 ) continue;
-				if( fabs(mDcaXY_mini[itrk]) > 3.0 ) continue;
-				if( fabs(mDcaZ_mini[itrk]) > 3.0 ) continue;
-				if( !mFlagBemc_mini[itrk] ) continue;
-				if( mPt_mini[itrk] < 0.5 ) continue;
-				
-				Nparticles++;
-			}
-
-			hNtrkValid->Fill( Nparticles, weight );
-			if( Nparticles < 2 ) continue; //event selection end.
-			hVtxZCut->Fill( mPosZ_mini[ivtx] );
-
-			//bin-by-bin test of jpsi efficiency
-			vector<TLorentzVector> Jpsi_MC;
-			if(doEmb_){
-				for( unsigned i = 0; i < e_MC_plus.size(); i++){
-					for( unsigned j = 0; j < e_MC_minus.size(); j++){
-						TLorentzVector e_inv_MC = e_MC_plus[i] + e_MC_minus[j];
-						if( TMath::Abs(e_inv_MC.Rapidity()) > 1.0 ) continue;
-						if( e_inv_MC.Pt() < 0. ) continue;
-						if( e_inv_MC.M() < 3.0 ) continue;
-						Jpsi_MC.push_back( e_inv_MC );
-						hMCDielectronPt->Fill( e_inv_MC.Pt(), weight );
-						hMCDielectronPt2->Fill( e_inv_MC.Pt()*e_inv_MC.Pt(), weight );
-					}
-				}
-			}
-
+		
 			//fill tofMult
 			hTofMult->Fill( mTofMult_mini );
 			double totalZDCEastADC = 0.;
@@ -437,6 +455,11 @@ void runPreStep_2_saveHisto( const bool doEmb_ = false, const bool doSmear_ = fa
 			e_plus.clear();
 			e_minus.clear();
 
+			double deltaR_minPlus = 999.;
+			double deltaR_minMinus = 999.;
+			int bestIndex = -1;
+			TVector3 bestMatchEplus(0,0,0);
+			TVector3 bestMatchEminus(0,0,0);
 			for(int itrk = 0; itrk < mNumberOfTracks_mini; itrk++){
 
 				if( (int) mVtxId_mini[itrk] != ivtx ) continue;
@@ -446,38 +469,57 @@ void runPreStep_2_saveHisto( const bool doEmb_ = false, const bool doSmear_ = fa
 				hElecDCAxy->Fill( mDcaXY_mini[itrk], weight );
 				hElecDCAz->Fill( mDcaZ_mini[itrk], weight );
 
-				if( mNhitsDEdx_mini[itrk] < 10 ) continue;
-				if( mNhitsFit_mini[itrk] < 13 ) continue;
+				if( mNhitsDEdx_mini[itrk] < 15 ) continue;
+				if( mNhitsFit_mini[itrk] < 25 ) continue;
 				if( fabs(mEta_mini[itrk]) > 1.0 ) continue;
 				if( fabs(mDcaXY_mini[itrk]) > 3.0 ) continue;
 				if( fabs(mDcaZ_mini[itrk]) > 3.0 ) continue;
 				if( !mFlagBemc_mini[itrk] ) continue;
 
-				if( doEmb_ && doSmear_){
+				//Recalculate the nsigma electron and pion in embedding
+				if( doEmb_ ){
 					//already studied numbers:
 					double a = smearing_a_para;
 					double b = smearing_b_para;
 					double pt_indep_sigma = pt_indep_const_sigma;
+					//select matching tracks
+					TVector3 part3;
+					part3.SetPtEtaPhi(mPt_mini[itrk],mEta_mini[itrk],mPhi_mini[itrk]);
+					TLorentzVector eMCParticle_plus = e_MC_plus[0];
+					TLorentzVector eMCParticle_minus = e_MC_minus[0];
 					if( mCharge_mini[itrk] == +1 ){
-						double pt_smearing = (mPt_mini[itrk] - e_MC_plus[0].Pt())/e_MC_plus[0].Pt();
-						double Nsigma = pt_smearing/pt_indep_sigma;
-						double sigma_new = sqrt( (a*e_MC_plus[0].Pt())*(a*e_MC_plus[0].Pt()) + b*b);
-						mPt_mini[itrk] = e_MC_plus[0].Pt()*(sigma_new*Nsigma+1);
+						if( isMatch(part3,eMCParticle_plus) ){
+							TVector3 partmc3 = eMCParticle_plus.Vect();
+							if( part3.DeltaR(partmc3) < deltaR_minPlus ) {
+								deltaR_minPlus=part3.DeltaR(partmc3);
+								bestMatchEplus = part3;
 
+								double pt_smearing = (mPt_mini[itrk] - e_MC_plus[0].Pt())/e_MC_plus[0].Pt();
+								double Nsigma = pt_smearing/pt_indep_sigma;
+								double sigma_new = sqrt( (a*e_MC_plus[0].Pt())*(a*e_MC_plus[0].Pt()) + b*b);
+								if( doSmear_) mPt_mini[itrk] = e_MC_plus[0].Pt()*(sigma_new*Nsigma+1);
+								if( mPt_mini[itrk] < 0.5 ) bestMatchEplus.SetPtEtaPhi(0,0,0);
+								else bestMatchEplus.SetPtEtaPhi(mPt_mini[itrk],part3.Eta(),part3.Phi() );
+							}
+						}
 					}
 					if( mCharge_mini[itrk] == -1 ){
-						double pt_smearing = (mPt_mini[itrk] - e_MC_minus[0].Pt())/e_MC_minus[0].Pt();
-						double Nsigma = pt_smearing/pt_indep_sigma;
-						double sigma_new = sqrt( (a*e_MC_minus[0].Pt())*(a*e_MC_minus[0].Pt()) + b*b);
-						mPt_mini[itrk] = e_MC_minus[0].Pt()*(sigma_new*Nsigma+1);
+						if( isMatch(part3,eMCParticle_minus) ){
+							TVector3 partmc3 = eMCParticle_minus.Vect();
+							if( part3.DeltaR(partmc3) < deltaR_minMinus ) {
+								deltaR_minMinus=part3.DeltaR(partmc3);
+								bestMatchEminus = part3;
 
+								double pt_smearing = (mPt_mini[itrk] - e_MC_minus[0].Pt())/e_MC_minus[0].Pt();
+								double Nsigma = pt_smearing/pt_indep_sigma;
+								double sigma_new = sqrt( (a*e_MC_minus[0].Pt())*(a*e_MC_minus[0].Pt()) + b*b);
+								if( doSmear_ ) mPt_mini[itrk] = e_MC_minus[0].Pt()*(sigma_new*Nsigma+1);
+								if( mPt_mini[itrk] < 0.5 ) bestMatchEminus.SetPtEtaPhi(0,0,0);
+								else bestMatchEminus.SetPtEtaPhi(mPt_mini[itrk],part3.Eta(),part3.Phi() );
+							}
+						}
 					}
-				}
-				
-				if( mPt_mini[itrk] < 0.5 ) continue;
 
-				//Recalculate the nsigma electron and pion in embedding
-				if( doEmb_ ){
 					for(int j=0;j<5;j++){
 						if(mPt_mini[itrk] > ptbins_nsigma[j] && mPt_mini[itrk] < ptbins_nsigma[j+1]){
 							double nsigma_e_data=0.;
@@ -488,7 +530,9 @@ void runPreStep_2_saveHisto( const bool doEmb_ = false, const bool doSmear_ = fa
 						}
 					}
 				}
-
+		
+				if( mPt_mini[itrk] < 0.5 ) continue;
+				
 				h_E0_BEMC->Fill( mBemcHTEnergy_mini[itrk] , weight);
 				h_EtaDist_BEMC->Fill(mBemcEta_mini[itrk]-mBemcClsEta_mini[itrk], weight);
 				h_PhiDist_BEMC->Fill( deltaPhi(mBemcPhi_mini[itrk],mBemcClsPhi_mini[itrk]) , weight);				
@@ -515,9 +559,9 @@ void runPreStep_2_saveHisto( const bool doEmb_ = false, const bool doSmear_ = fa
 					mBEMCPmag2.push_back(mBemcPmag_mini[itrk]);
 				}
 
-			}
+			}//end of track loop
 
-	//like sign case
+		//like sign case
 			if(e_plus.size() > 1){
 				for(unsigned i = 0; i < e_plus.size(); i++){
 					for(unsigned j = i+1; j < e_plus.size(); j++){
@@ -533,12 +577,6 @@ void runPreStep_2_saveHisto( const bool doEmb_ = false, const bool doSmear_ = fa
 						if( fabs(e_inv.Rapidity()) > 1.0 ) continue;
 						hLikeSignMass_Pt2->Fill( e_inv.M(), e_inv.Pt() * e_inv.Pt(), weight );
 						hLikeSignMass->Fill( e_inv.M(), weight );
-						if( e_inv.M() > 2.8 && e_inv.M() < 3.3 ) {
-							hLikeSignPolarize->Fill( e_plus[i].DeltaPhi(e_plus[i]+e_plus[j]) );
-							hLikeSignPolarize->Fill( e_plus[j].DeltaPhi(e_plus[i]+e_plus[j]) );
-							double dPhi = (e_plus[i]-e_plus[j]).DeltaPhi(e_plus[i]+e_plus[j]);
-							hLikeSignPolarize2->Fill( dPhi );
-						}
 						//neutron coincidence or not
 						if( totalZDCWestADC < 40 || (totalZDCWestADC > 140) ){
 							hLikeSignMassZDCveto->Fill( e_inv.M() );
@@ -568,12 +606,6 @@ void runPreStep_2_saveHisto( const bool doEmb_ = false, const bool doSmear_ = fa
 						if( fabs(e_inv.Rapidity()) > 1.0 ) continue;
 						hLikeSignMass_Pt2->Fill( e_inv.M(), e_inv.Pt() * e_inv.Pt(), weight );
 						hLikeSignMass->Fill( e_inv.M(), weight );
-						if( e_inv.M() > 2.8 && e_inv.M() < 3.3 ) {
-							hLikeSignPolarize->Fill( e_minus[i].DeltaPhi(e_minus[i]+e_minus[j]) );
-							hLikeSignPolarize->Fill( e_minus[j].DeltaPhi(e_minus[i]+e_minus[j]) );
-							double dPhi = (e_minus[i]-e_minus[j]).DeltaPhi(e_minus[i]+e_minus[j]);
-							hLikeSignPolarize2->Fill( dPhi );
-						}
 						//neutron coincidence or not
 						if( totalZDCWestADC < 40 || (totalZDCWestADC > 140) ){
 							hLikeSignMassZDCveto->Fill( e_inv.M() );
@@ -586,14 +618,26 @@ void runPreStep_2_saveHisto( const bool doEmb_ = false, const bool doSmear_ = fa
 					}
 				}
 			}
-	//end like sign
+		//end like sign
 
-	//unlike sign case
+		//unlike sign case
 			if( e_plus.size() < 1 || e_minus.size() < 1 ) continue;
+			if( doEmb_ ){
+				if( bestMatchEplus.Pt() == 0 || bestMatchEminus.Pt() == 0 ) continue;
+			
+				e_plus.clear();
+				e_minus.clear();
+				TLorentzVector bestMatchEplus4vect,bestMatchEminus4vect;
+				bestMatchEplus4vect.SetPtEtaPhiM(bestMatchEplus.Pt(),bestMatchEplus.Eta(),bestMatchEplus.Phi(), MASS_ELECTRON);
+				bestMatchEminus4vect.SetPtEtaPhiM(bestMatchEminus.Pt(),bestMatchEminus.Eta(),bestMatchEminus.Phi(), MASS_ELECTRON);
+				e_plus.push_back( bestMatchEplus4vect );
+				e_minus.push_back( bestMatchEminus4vect );
+			}
+			//after event selections 
+			hVtxZCut->Fill( mPosZ_mini[ivtx] );
 			h_ZDCEast[2]->Fill(totalZDCEastADC, weight);
 			h_ZDCWest[2]->Fill(totalZDCWestADC, weight);
 			
-			vector< TLorentzVector> j_RECO;
 			//unlike-sign pair loop
 			for( unsigned itrk = 0; itrk < e_plus.size(); itrk++ ){
 				for( unsigned jtrk = 0; jtrk < e_minus.size(); jtrk++ ){
@@ -629,16 +673,6 @@ void runPreStep_2_saveHisto( const bool doEmb_ = false, const bool doSmear_ = fa
 					hJpsiMass_Pt2->Fill(e_inv.M(), e_inv.Pt()*e_inv.Pt(), weight);
 					hDielectronPt->Fill(e_inv.Pt(), weight);
 					hDielectronPt2->Fill(e_inv.Pt()*e_inv.Pt(), weight);
-			
-					if( e_inv.M() > 2.8 && e_inv.M() < 3.3 ) {
-						hTofMultJpsi->Fill( mTofMult_mini, weight );
-						hJpsiPolarize->Fill( e_plus[itrk].DeltaPhi(e_plus[itrk]+e_minus[jtrk]) );
-						hJpsiPolarize->Fill( e_minus[jtrk].DeltaPhi(e_plus[itrk]+e_minus[jtrk]) );
-						double dPhi = (e_plus[itrk]-e_minus[jtrk]).DeltaPhi(e_plus[itrk]+e_minus[jtrk]);
-						hJpsiPolarize2->Fill( dPhi );
-					}
-					
-					j_RECO.push_back( e_inv );
 					//within neutron peak;
 					if( totalZDCWestADC < 40 || (totalZDCWestADC > 140) ){
 						hJpsiMassZDCveto->Fill( e_inv.M(), weight );
@@ -651,15 +685,7 @@ void runPreStep_2_saveHisto( const bool doEmb_ = false, const bool doSmear_ = fa
 				}
 			}
 
-			//jpsi resolution
-			if( doEmb_ && j_MC.size() == 1 && j_RECO.size() == 1) {
-				hMCDielectronPt2_match->Fill( j_MC[0].Pt() * j_MC[0].Pt() );
-				hJpsiPt2_match->Fill( j_RECO[0].Pt() * j_RECO[0].Pt() );
-				double reso = ((j_MC[0].Pt()*j_MC[0].Pt()) - (j_RECO[0].Pt() * j_RECO[0].Pt()))/(j_MC[0].Pt()*j_MC[0].Pt());
-				hJpsiReso->Fill( j_MC[0].Pt()*j_MC[0].Pt(), reso);
-				hJpsiGENvsRECO->Fill(j_RECO[0].Pt() * j_RECO[0].Pt(), j_MC[0].Pt()*j_MC[0].Pt());
-			}
-		}
+		}//nvertex
 	}
 
 	
